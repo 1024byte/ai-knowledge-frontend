@@ -1,0 +1,508 @@
+{
+  "rootHash": "1ee05dec216e533d8bd0788c97848c8d5a52ce60a952735007beab5347a6ae17",
+  "timestamp": 1783093876255,
+  "fileCount": 28,
+  "files": [
+    {
+      "path": "vite.config.ts",
+      "hash": "d4ab2cb8d13106123d66459ddd2d1b46466187d6789f47c3f1557ce29afc7675",
+      "size": 737,
+      "modified": 1783077846029.6858
+    },
+    {
+      "path": "src\\App.vue",
+      "hash": "f40fdc1adc2ff7355a7e596e3f95ff99c1aa2af3e38a2590d1a4622779d8a311",
+      "size": 501,
+      "modified": 1783077846082.2798
+    },
+    {
+      "path": "src\\main.ts",
+      "hash": "5272f130323861493955454dd2f175f17c7cacbc8c0f2b240e31d87bee61b6b1",
+      "size": 521,
+      "modified": 1783077846082.2798
+    },
+    {
+      "path": "src\\views\\Chat.vue",
+      "hash": "e0e520de8c9c54b90e6e63bdecdd48f2560421a9a28f3d59ac04b26435ea84a5",
+      "size": 336,
+      "modified": 1783077846070.6978
+    },
+    {
+      "path": "src\\views\\Document.vue",
+      "hash": "d8ab91219a3663e510c23239374babdc98fba122c75477b95c068c2562196664",
+      "size": 3770,
+      "modified": 1783077846069.5884
+    },
+    {
+      "path": "src\\views\\Home.vue",
+      "hash": "60eca4f65012da812a30a24379b04d94a3dce4e74fb9f67bcfe21bbe0b2b50e0",
+      "size": 3184,
+      "modified": 1783077846069.5884
+    },
+    {
+      "path": "src\\views\\NotFound.vue",
+      "hash": "20db9d56f917199391367eaccd575c1a9308a2def50f83e36ec93ca2d007e28c",
+      "size": 657,
+      "modified": 1783077846072.7605
+    },
+    {
+      "path": "src\\utils\\format.ts",
+      "hash": "f54982341e4852079413757da39f8728f09e172793949bb2b4f911c9a67d2667",
+      "size": 564,
+      "modified": 1783077846047.6045
+    },
+    {
+      "path": "src\\utils\\markdown.ts",
+      "hash": "346a2111d3bb45edd87b27db27bc223bbe2034ffd39a6fe699c8544c6ddb9a5b",
+      "size": 740,
+      "modified": 1783077846050.7715
+    },
+    {
+      "path": "src\\utils\\storage.ts",
+      "hash": "55884905d4f5b6c25cf784a01234c9fe91ed010f04ffa17b9db2dc83aa688ce2",
+      "size": 946,
+      "modified": 1783077846051.7717
+    },
+    {
+      "path": "src\\types\\api.d.ts",
+      "hash": "b8cf2f034f91cd3c0ad7debf181072db1b20c3006a870f171f4cca201a58ca28",
+      "size": 267,
+      "modified": 1783077846046.3232
+    },
+    {
+      "path": "src\\types\\chat.d.ts",
+      "hash": "f7d2a74a22b42aa9dc174ff034b8d552337a2d5e022ee65c2de1268094a476b6",
+      "size": 408,
+      "modified": 1783077846046.3232
+    },
+    {
+      "path": "src\\types\\document.d.ts",
+      "hash": "cb8f438bf5193d6cca3e42f4c5130d0c208d4c644c0989916c4ecc2138d6158f",
+      "size": 315,
+      "modified": 1783077846033.3428
+    },
+    {
+      "path": "src\\stores\\chat.ts",
+      "hash": "af1b0c1a1d503ed66f16e4b6e195679cd941012a6926691d31727ee81efe7432",
+      "size": 1489,
+      "modified": 1783077846061.4775
+    },
+    {
+      "path": "src\\stores\\document.ts",
+      "hash": "14dfc2b38fb4cc27f51b0a3557b855ab95b2279f79ac67b031a5996a449901a4",
+      "size": 1212,
+      "modified": 1783077846052.7727
+    },
+    {
+      "path": "src\\stores\\index.ts",
+      "hash": "608c83c1cc87cdc358282413cd5d37cceaf08202635566c806bf3932c7655b17",
+      "size": 144,
+      "modified": 1783077846068.5784
+    },
+    {
+      "path": "src\\router\\index.ts",
+      "hash": "25f5cfa80d6d68918e570345ea9132f8e94dd8e70268f99ae172ad98e77641f8",
+      "size": 1012,
+      "modified": 1783077846068.5784
+    },
+    {
+      "path": "src\\layouts\\MainLayout.vue",
+      "hash": "35e85e32268a8286744bdbad25ba5a336976abb98e76c874b9a5e8ccd1199104",
+      "size": 2543,
+      "modified": 1783077846082.2798
+    },
+    {
+      "path": "src\\composables\\useChat.ts",
+      "hash": "8d4b0c2b851b39d47ce6ea260bbae0db3ca2a2219e469dee771709cc2ff05f94",
+      "size": 1849,
+      "modified": 1783077846052.7727
+    },
+    {
+      "path": "src\\composables\\useUpload.ts",
+      "hash": "45f70bc147efadaf9b5f11d8d17761f241c075ab1e252587890642ecfa0271da",
+      "size": 2228,
+      "modified": 1783077846051.7717
+    },
+    {
+      "path": "src\\components\\document\\UploadDialog.vue",
+      "hash": "5b486c81714f5358fa863cebdbdb258bafcfaeee18bf712f93ddf103950172ba",
+      "size": 3264,
+      "modified": 1783077846068.5784
+    },
+    {
+      "path": "src\\components\\chat\\ChatContainer.vue",
+      "hash": "c0c213bb6d476b385024cbc0fb2daa8faa8fccb9468b833345578558c3ee6c84",
+      "size": 2398,
+      "modified": 1783077846069.5884
+    },
+    {
+      "path": "src\\components\\chat\\ChatInput.vue",
+      "hash": "b91d1d76aa9cccb52c8f1b29555f66b7f2a5b5e9e8233e8a5060c9ec445648ee",
+      "size": 1600,
+      "modified": 1783077846069.5884
+    },
+    {
+      "path": "src\\components\\chat\\MessageItem.vue",
+      "hash": "964a2106af4218ac6d13dfdeacb719f26a8609b04c3fb06ef87363dabcf5a699",
+      "size": 2538,
+      "modified": 1783077846069.5884
+    },
+    {
+      "path": "src\\components\\chat\\MessageList.vue",
+      "hash": "b41657f23f579e3167aa88c39bcc833ab25c043b1ee7610925a8dbe025343574",
+      "size": 1870,
+      "modified": 1783077846069.5884
+    },
+    {
+      "path": "src\\api\\chat.ts",
+      "hash": "2b8dccb2d4f265c29a330679b63dba8cee9008ec4f47c645ca835db358f2840b",
+      "size": 900,
+      "modified": 1783077846047.6045
+    },
+    {
+      "path": "src\\api\\document.ts",
+      "hash": "99bcbd6271e41b9ce6d8f5952d8b8611937ba500c6d6e5d27d597022bb57233f",
+      "size": 1040,
+      "modified": 1783077846047.6045
+    },
+    {
+      "path": "src\\api\\index.ts",
+      "hash": "ed3235ff8da50e272f2fc4cbe7a7164af71c6722380638dadd98ac756522d3e3",
+      "size": 858,
+      "modified": 1783077846046.3232
+    }
+  ],
+  "tree": {
+    "hash": "1ee05dec216e533d8bd0788c97848c8d5a52ce60a952735007beab5347a6ae17",
+    "left": {
+      "hash": "487d51a9282d469263f90fb4bde407f3ecf7dc8d171e96cb46b974fb00ff4053",
+      "left": {
+        "hash": "e1c79e07f7feb97e59b4d71ab22ff8f112bace7126367d4786013cb201790c05",
+        "left": {
+          "hash": "668ba4d15fc686f22875566769427f322f2cbb9cd01c450fff65e4c363b86ba2",
+          "left": {
+            "hash": "acdf441541ae8096ac7c0ee9c9a81473891cd97c922e100f503b978e304daa42",
+            "left": {
+              "hash": "2b8dccb2d4f265c29a330679b63dba8cee9008ec4f47c645ca835db358f2840b",
+              "file": {
+                "path": "src\\api\\chat.ts",
+                "hash": "2b8dccb2d4f265c29a330679b63dba8cee9008ec4f47c645ca835db358f2840b",
+                "size": 900,
+                "modified": 1783077846047.6045
+              }
+            },
+            "right": {
+              "hash": "99bcbd6271e41b9ce6d8f5952d8b8611937ba500c6d6e5d27d597022bb57233f",
+              "file": {
+                "path": "src\\api\\document.ts",
+                "hash": "99bcbd6271e41b9ce6d8f5952d8b8611937ba500c6d6e5d27d597022bb57233f",
+                "size": 1040,
+                "modified": 1783077846047.6045
+              }
+            }
+          },
+          "right": {
+            "hash": "e0551eaf7ba890add94983fb5f17d53456bb964af8e73c276d955b2c4d0f8e1f",
+            "left": {
+              "hash": "ed3235ff8da50e272f2fc4cbe7a7164af71c6722380638dadd98ac756522d3e3",
+              "file": {
+                "path": "src\\api\\index.ts",
+                "hash": "ed3235ff8da50e272f2fc4cbe7a7164af71c6722380638dadd98ac756522d3e3",
+                "size": 858,
+                "modified": 1783077846046.3232
+              }
+            },
+            "right": {
+              "hash": "f40fdc1adc2ff7355a7e596e3f95ff99c1aa2af3e38a2590d1a4622779d8a311",
+              "file": {
+                "path": "src\\App.vue",
+                "hash": "f40fdc1adc2ff7355a7e596e3f95ff99c1aa2af3e38a2590d1a4622779d8a311",
+                "size": 501,
+                "modified": 1783077846082.2798
+              }
+            }
+          }
+        },
+        "right": {
+          "hash": "61842f0223b302bf35f06705ae15826c6f42ef5d79da4fa9213d310358b08a11",
+          "left": {
+            "hash": "8d5438b7c50149b856c2fc1e2e1ac20827870795c4f68f35fcb364d2e2ab53ce",
+            "left": {
+              "hash": "c0c213bb6d476b385024cbc0fb2daa8faa8fccb9468b833345578558c3ee6c84",
+              "file": {
+                "path": "src\\components\\chat\\ChatContainer.vue",
+                "hash": "c0c213bb6d476b385024cbc0fb2daa8faa8fccb9468b833345578558c3ee6c84",
+                "size": 2398,
+                "modified": 1783077846069.5884
+              }
+            },
+            "right": {
+              "hash": "b91d1d76aa9cccb52c8f1b29555f66b7f2a5b5e9e8233e8a5060c9ec445648ee",
+              "file": {
+                "path": "src\\components\\chat\\ChatInput.vue",
+                "hash": "b91d1d76aa9cccb52c8f1b29555f66b7f2a5b5e9e8233e8a5060c9ec445648ee",
+                "size": 1600,
+                "modified": 1783077846069.5884
+              }
+            }
+          },
+          "right": {
+            "hash": "a0ce68cc918c44c1bdcca7aff4907f1e83f21bc252141873ebe7b5fe9cfbadff",
+            "left": {
+              "hash": "964a2106af4218ac6d13dfdeacb719f26a8609b04c3fb06ef87363dabcf5a699",
+              "file": {
+                "path": "src\\components\\chat\\MessageItem.vue",
+                "hash": "964a2106af4218ac6d13dfdeacb719f26a8609b04c3fb06ef87363dabcf5a699",
+                "size": 2538,
+                "modified": 1783077846069.5884
+              }
+            },
+            "right": {
+              "hash": "b41657f23f579e3167aa88c39bcc833ab25c043b1ee7610925a8dbe025343574",
+              "file": {
+                "path": "src\\components\\chat\\MessageList.vue",
+                "hash": "b41657f23f579e3167aa88c39bcc833ab25c043b1ee7610925a8dbe025343574",
+                "size": 1870,
+                "modified": 1783077846069.5884
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "hash": "094bb8de98766ab5236e9ffaea6aa6dc6bbaf2ca890372caca0f9f06bfce1cf4",
+        "left": {
+          "hash": "0cb9faf7f0aa56b243a3c50f9a0ea86e87bbf148416ccea391b38374c1f6101b",
+          "left": {
+            "hash": "cbc66bb015d4dd8fc394c77fa4b970cd48a25683d32e9cbb56e94caf6141a40b",
+            "left": {
+              "hash": "5b486c81714f5358fa863cebdbdb258bafcfaeee18bf712f93ddf103950172ba",
+              "file": {
+                "path": "src\\components\\document\\UploadDialog.vue",
+                "hash": "5b486c81714f5358fa863cebdbdb258bafcfaeee18bf712f93ddf103950172ba",
+                "size": 3264,
+                "modified": 1783077846068.5784
+              }
+            },
+            "right": {
+              "hash": "8d4b0c2b851b39d47ce6ea260bbae0db3ca2a2219e469dee771709cc2ff05f94",
+              "file": {
+                "path": "src\\composables\\useChat.ts",
+                "hash": "8d4b0c2b851b39d47ce6ea260bbae0db3ca2a2219e469dee771709cc2ff05f94",
+                "size": 1849,
+                "modified": 1783077846052.7727
+              }
+            }
+          },
+          "right": {
+            "hash": "8732673324a03e721db5b82b99b7c93ab98735569afb597178168c3210b808c8",
+            "left": {
+              "hash": "45f70bc147efadaf9b5f11d8d17761f241c075ab1e252587890642ecfa0271da",
+              "file": {
+                "path": "src\\composables\\useUpload.ts",
+                "hash": "45f70bc147efadaf9b5f11d8d17761f241c075ab1e252587890642ecfa0271da",
+                "size": 2228,
+                "modified": 1783077846051.7717
+              }
+            },
+            "right": {
+              "hash": "35e85e32268a8286744bdbad25ba5a336976abb98e76c874b9a5e8ccd1199104",
+              "file": {
+                "path": "src\\layouts\\MainLayout.vue",
+                "hash": "35e85e32268a8286744bdbad25ba5a336976abb98e76c874b9a5e8ccd1199104",
+                "size": 2543,
+                "modified": 1783077846082.2798
+              }
+            }
+          }
+        },
+        "right": {
+          "hash": "2553339dd8ed819f93214610461dc919af786f2b84dd207f5cfea7beded820c3",
+          "left": {
+            "hash": "f24c05bc89d5a5d7f1d597a08135205817b7421911684c006082fb1a09bbe564",
+            "left": {
+              "hash": "5272f130323861493955454dd2f175f17c7cacbc8c0f2b240e31d87bee61b6b1",
+              "file": {
+                "path": "src\\main.ts",
+                "hash": "5272f130323861493955454dd2f175f17c7cacbc8c0f2b240e31d87bee61b6b1",
+                "size": 521,
+                "modified": 1783077846082.2798
+              }
+            },
+            "right": {
+              "hash": "25f5cfa80d6d68918e570345ea9132f8e94dd8e70268f99ae172ad98e77641f8",
+              "file": {
+                "path": "src\\router\\index.ts",
+                "hash": "25f5cfa80d6d68918e570345ea9132f8e94dd8e70268f99ae172ad98e77641f8",
+                "size": 1012,
+                "modified": 1783077846068.5784
+              }
+            }
+          },
+          "right": {
+            "hash": "64f66a2cae91a670b1489eb4a81ca0c7162745160dcc4bc6cf87017c83c0388e",
+            "left": {
+              "hash": "af1b0c1a1d503ed66f16e4b6e195679cd941012a6926691d31727ee81efe7432",
+              "file": {
+                "path": "src\\stores\\chat.ts",
+                "hash": "af1b0c1a1d503ed66f16e4b6e195679cd941012a6926691d31727ee81efe7432",
+                "size": 1489,
+                "modified": 1783077846061.4775
+              }
+            },
+            "right": {
+              "hash": "14dfc2b38fb4cc27f51b0a3557b855ab95b2279f79ac67b031a5996a449901a4",
+              "file": {
+                "path": "src\\stores\\document.ts",
+                "hash": "14dfc2b38fb4cc27f51b0a3557b855ab95b2279f79ac67b031a5996a449901a4",
+                "size": 1212,
+                "modified": 1783077846052.7727
+              }
+            }
+          }
+        }
+      }
+    },
+    "right": {
+      "hash": "eda4566eb73ff459c5bf7f763b9ac69052a8537a5cf68bb35e4238096b121c7e",
+      "left": {
+        "hash": "4068c87efb210bcefa10511e8b4772565313a8885e5142f63b7ee6c485d63c70",
+        "left": {
+          "hash": "efe7409448b79ee7aef1972f1b12562b451415c1affe6eb6876ebd3079ee7e52",
+          "left": {
+            "hash": "47d54ae6c87cd62020e68d74f1fb936ca0ef5088f1e042e5ae686920742a38be",
+            "left": {
+              "hash": "608c83c1cc87cdc358282413cd5d37cceaf08202635566c806bf3932c7655b17",
+              "file": {
+                "path": "src\\stores\\index.ts",
+                "hash": "608c83c1cc87cdc358282413cd5d37cceaf08202635566c806bf3932c7655b17",
+                "size": 144,
+                "modified": 1783077846068.5784
+              }
+            },
+            "right": {
+              "hash": "b8cf2f034f91cd3c0ad7debf181072db1b20c3006a870f171f4cca201a58ca28",
+              "file": {
+                "path": "src\\types\\api.d.ts",
+                "hash": "b8cf2f034f91cd3c0ad7debf181072db1b20c3006a870f171f4cca201a58ca28",
+                "size": 267,
+                "modified": 1783077846046.3232
+              }
+            }
+          },
+          "right": {
+            "hash": "8c4d6078ab5344f39e2b04f5fd95823303d3c62b9d65e13c20767f18b59fea14",
+            "left": {
+              "hash": "f7d2a74a22b42aa9dc174ff034b8d552337a2d5e022ee65c2de1268094a476b6",
+              "file": {
+                "path": "src\\types\\chat.d.ts",
+                "hash": "f7d2a74a22b42aa9dc174ff034b8d552337a2d5e022ee65c2de1268094a476b6",
+                "size": 408,
+                "modified": 1783077846046.3232
+              }
+            },
+            "right": {
+              "hash": "cb8f438bf5193d6cca3e42f4c5130d0c208d4c644c0989916c4ecc2138d6158f",
+              "file": {
+                "path": "src\\types\\document.d.ts",
+                "hash": "cb8f438bf5193d6cca3e42f4c5130d0c208d4c644c0989916c4ecc2138d6158f",
+                "size": 315,
+                "modified": 1783077846033.3428
+              }
+            }
+          }
+        },
+        "right": {
+          "hash": "9704ea20f7c1a5565f0422ddda3fd7aa4c4e2440ee62266275b731bce930d175",
+          "left": {
+            "hash": "8763d372c8d7c8b0b9d5b5acbe6d9ba3fe29883348851a8d57c98bdce5760240",
+            "left": {
+              "hash": "f54982341e4852079413757da39f8728f09e172793949bb2b4f911c9a67d2667",
+              "file": {
+                "path": "src\\utils\\format.ts",
+                "hash": "f54982341e4852079413757da39f8728f09e172793949bb2b4f911c9a67d2667",
+                "size": 564,
+                "modified": 1783077846047.6045
+              }
+            },
+            "right": {
+              "hash": "346a2111d3bb45edd87b27db27bc223bbe2034ffd39a6fe699c8544c6ddb9a5b",
+              "file": {
+                "path": "src\\utils\\markdown.ts",
+                "hash": "346a2111d3bb45edd87b27db27bc223bbe2034ffd39a6fe699c8544c6ddb9a5b",
+                "size": 740,
+                "modified": 1783077846050.7715
+              }
+            }
+          },
+          "right": {
+            "hash": "f216a1e695c4cc6a66f917c26730eed7d112e080798a52ac9ec740077a11c268",
+            "left": {
+              "hash": "55884905d4f5b6c25cf784a01234c9fe91ed010f04ffa17b9db2dc83aa688ce2",
+              "file": {
+                "path": "src\\utils\\storage.ts",
+                "hash": "55884905d4f5b6c25cf784a01234c9fe91ed010f04ffa17b9db2dc83aa688ce2",
+                "size": 946,
+                "modified": 1783077846051.7717
+              }
+            },
+            "right": {
+              "hash": "e0e520de8c9c54b90e6e63bdecdd48f2560421a9a28f3d59ac04b26435ea84a5",
+              "file": {
+                "path": "src\\views\\Chat.vue",
+                "hash": "e0e520de8c9c54b90e6e63bdecdd48f2560421a9a28f3d59ac04b26435ea84a5",
+                "size": 336,
+                "modified": 1783077846070.6978
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "hash": "b7c2a0b697c8f8f0134db20ded33df34234efece077eaf9deba2882c5e28759f",
+        "left": {
+          "hash": "be5f8c44ade681846b662e5b415e71d47da4dcd9ca51fd4b55ffe891d501b4ee",
+          "left": {
+            "hash": "d8ab91219a3663e510c23239374babdc98fba122c75477b95c068c2562196664",
+            "file": {
+              "path": "src\\views\\Document.vue",
+              "hash": "d8ab91219a3663e510c23239374babdc98fba122c75477b95c068c2562196664",
+              "size": 3770,
+              "modified": 1783077846069.5884
+            }
+          },
+          "right": {
+            "hash": "60eca4f65012da812a30a24379b04d94a3dce4e74fb9f67bcfe21bbe0b2b50e0",
+            "file": {
+              "path": "src\\views\\Home.vue",
+              "hash": "60eca4f65012da812a30a24379b04d94a3dce4e74fb9f67bcfe21bbe0b2b50e0",
+              "size": 3184,
+              "modified": 1783077846069.5884
+            }
+          }
+        },
+        "right": {
+          "hash": "8358ee53518030276a7b3e51ee37b09987485b84d6457e5ff6a3c49dfff2e369",
+          "left": {
+            "hash": "20db9d56f917199391367eaccd575c1a9308a2def50f83e36ec93ca2d007e28c",
+            "file": {
+              "path": "src\\views\\NotFound.vue",
+              "hash": "20db9d56f917199391367eaccd575c1a9308a2def50f83e36ec93ca2d007e28c",
+              "size": 657,
+              "modified": 1783077846072.7605
+            }
+          },
+          "right": {
+            "hash": "d4ab2cb8d13106123d66459ddd2d1b46466187d6789f47c3f1557ce29afc7675",
+            "file": {
+              "path": "vite.config.ts",
+              "hash": "d4ab2cb8d13106123d66459ddd2d1b46466187d6789f47c3f1557ce29afc7675",
+              "size": 737,
+              "modified": 1783077846029.6858
+            }
+          }
+        }
+      }
+    }
+  }
+}
