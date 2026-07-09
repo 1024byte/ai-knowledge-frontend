@@ -4,7 +4,7 @@ export interface AxiosProgressConfig extends AxiosRequestConfig {
   onUploadProgress?: (progressEvent: ProgressEvent) => void
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResult<T = any> {
   code: number
   message: string
   data: T

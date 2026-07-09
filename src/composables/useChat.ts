@@ -29,6 +29,7 @@ export function useChat() {
         id: index + 1,
         role: msg.role,
         content: msg.content,
+        sources: msg.sources,
         timestamp: new Date(msg.createTime)
       }))
     } catch (error) {
@@ -47,6 +48,7 @@ export function useChat() {
         id: index + 1,
         role: msg.role,
         content: msg.content,
+        sources: msg.sources,
         timestamp: new Date(msg.createTime)
       }))
     } catch (error) {

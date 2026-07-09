@@ -11,3 +11,8 @@ export interface DocumentRecord {
   uploadTime: number
   chunkCount: number
 }
+
+export interface CreateCategoryRequest {
+  name: string
+  description?: string
+}

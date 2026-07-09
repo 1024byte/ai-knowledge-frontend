@@ -28,6 +28,7 @@ export interface SearchResult {
 export interface HistoryMessage {
   role: 'user' | 'assistant'
   content: string
+  sources?: string[]
   createTime: string
 }
 

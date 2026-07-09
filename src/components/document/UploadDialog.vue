@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="上传文档"
+    :title="`上传文档 - ${category || '默认分类'}`"
     width="600px"
     :close-on-click-modal="false"
   >
@@ -24,7 +24,7 @@
           </div>
           <template #tip>
             <div class="el-upload__tip">
-              支持 .txt、.md、.pdf 格式，单个文件不超过 10MB
+              支持 txt、md、pdf、docx、xlsx、pptx、jpg/png 格式，单个文件不超过 10MB
             </div>
           </template>
         </el-upload>
@@ -57,9 +57,12 @@ import { useUpload } from '@/composables/useUpload'
 import type { UploadFile } from 'element-plus'
 
 const visible = defineModel<boolean>()
+const props = defineProps<{
+  category?: string
+}>()
 const emit = defineEmits(['success'])
 
-const acceptTypes = '.txt,.md,.pdf'
+const acceptTypes = '.txt,.md,.pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png'
 const fileList = ref<UploadFile[]>([])
 
 const { uploadFile, uploadProgress, isUploading } = useUpload()
@@ -81,7 +84,7 @@ const handleUpload = async () => {
   try {
     for (const file of fileList.value) {
       if (file.raw) {
-        const result = await uploadFile(file.raw)
+        await uploadFile(file.raw, props.category)
       }
     }
 

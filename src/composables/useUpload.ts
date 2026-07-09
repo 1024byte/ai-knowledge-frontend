@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { documentApi } from '@/api/document'
 import type { UploadResponse } from '@/types/document'
 
-const ALLOWED_EXTENSIONS = ['.txt', '.md', '.pdf']
+const ALLOWED_EXTENSIONS = ['.txt', '.md', '.pdf', '.docx', '.xlsx', '.pptx', '.jpg', '.jpeg', '.png']
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 
 export function validateFile(file: File): { valid: boolean; message?: string } {
@@ -29,7 +29,7 @@ export function useUpload() {
   const uploadProgress = ref(0)
   const isUploading = ref(false)
 
-  const uploadFile = async (file: File): Promise<UploadResponse> => {
+  const uploadFile = async (file: File, category?: string): Promise<UploadResponse> => {
     const validation = validateFile(file)
     if (!validation.valid) {
       throw new Error(validation.message)
@@ -41,6 +41,9 @@ export function useUpload() {
     try {
       const formData = new FormData()
       formData.append('file', file)
+      if (category) {
+        formData.append('category', category)
+      }
 
       const response = await documentApi.upload(formData, {
         onUploadProgress: (progressEvent: ProgressEvent) => {
@@ -59,11 +62,11 @@ export function useUpload() {
     }
   }
 
-  const uploadFiles = async (files: File[]) => {
+  const uploadFiles = async (files: File[], category?: string) => {
     const results = []
     for (const file of files) {
       try {
-        const result = await uploadFile(file)
+        const result = await uploadFile(file, category)
         results.push({ file, success: true, result })
       } catch (error: any) {
         results.push({ file, success: false, error: error.message })
