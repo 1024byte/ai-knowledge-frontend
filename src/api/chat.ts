@@ -21,5 +21,9 @@ export const chatApi = {
 
   deleteSession: (sessionId: string): Promise<void> => {
     return apiClient.delete(`/chat/session/${sessionId}`)
+  },
+
+  deleteAllSessions: (): Promise<void> => {
+    return apiClient.delete('/chat/sessions')
   }
 }

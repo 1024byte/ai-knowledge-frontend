@@ -128,6 +128,19 @@ export function useChat() {
     }
   }
 
+  const deleteAllSessions = async () => {
+    try {
+      await chatApi.deleteAllSessions()
+      sessions.value = []
+      messages.value = []
+      sessionId.value = ''
+      localStorage.removeItem(SESSION_STORAGE_KEY)
+    } catch (error) {
+      console.error('Delete all sessions error:', error)
+      throw error
+    }
+  }
+
   const clearMessages = () => {
     messages.value = []
     searchResults.value = []
@@ -147,6 +160,7 @@ export function useChat() {
     switchSession,
     fetchSessions,
     deleteSession,
+    deleteAllSessions,
     clearMessages
   }
 }

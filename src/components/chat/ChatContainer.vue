@@ -39,6 +39,12 @@
         暂无历史会话
       </div>
       <div v-else class="session-list">
+        <div class="session-list-header">
+          <span>共 {{ sessions.length }} 个会话</span>
+          <el-button text type="danger" size="small" @click="handleDeleteAllSessions">
+            清空全部
+          </el-button>
+        </div>
         <div
           v-for="session in sessions"
           :key="session.sessionId"
@@ -82,7 +88,8 @@ const {
   restoreSession,
   switchSession,
   fetchSessions,
-  deleteSession
+  deleteSession,
+  deleteAllSessions
 } = useChat()
 
 const inputMessage = ref('')
@@ -137,7 +144,7 @@ const handleSwitchSession = async (targetSessionId: string) => {
   scrollToBottom()
 }
 
-const handleDeleteSession = async (targetSessionId: string) => {
+  const handleDeleteSession = async (targetSessionId: string) => {
   try {
     await ElMessageBox.confirm('确定要删除该会话吗？删除后不可恢复。', '删除会话', {
       confirmButtonText: '确定',
@@ -147,6 +154,21 @@ const handleDeleteSession = async (targetSessionId: string) => {
 
     await deleteSession(targetSessionId)
     ElMessage.success('删除成功')
+  } catch {
+    // 用户取消或删除失败
+  }
+}
+
+const handleDeleteAllSessions = async () => {
+  try {
+    await ElMessageBox.confirm('确定要清空所有历史会话吗？此操作不可恢复！', '清空全部会话', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+
+    await deleteAllSessions()
+    ElMessage.success('已清空全部会话')
   } catch {
     // 用户取消或删除失败
   }
@@ -219,6 +241,15 @@ onMounted(() => {
   padding: 40px 0;
   color: var(--el-text-color-secondary);
   font-size: 14px;
+}
+
+.session-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--el-text-color-secondary);
 }
 
 .session-list {

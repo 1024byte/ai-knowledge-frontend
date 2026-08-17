@@ -1,6 +1,8 @@
 import apiClient from './index'
 import type { AxiosProgressConfig } from '@/types/api'
-import type { UploadResponse, DocumentRecord, DocumentFileRecord, CreateCategoryRequest } from '@/types/document'
+import type { UploadResponse, DocumentRecord, DocumentFileRecord, DocumentStatusInfo, CreateCategoryRequest } from '@/types/document'
+
+const baseURL = import.meta.env.VITE_API_BASE_URL || ''
 
 export const documentApi = {
   upload: (
@@ -37,5 +39,21 @@ export const documentApi = {
 
   deleteDocument: (id: number): Promise<void> => {
     return apiClient.delete(`/documents/${id}`)
+  },
+
+  getDocumentContent: (id: number): Promise<string> => {
+    return apiClient.get(`/documents/${id}/content`)
+  },
+
+  getDocumentContentUrl: (id: number): string => {
+    return `${baseURL}/documents/${id}/content`
+  },
+
+  getDocumentStatus: (id: number): Promise<DocumentStatusInfo> => {
+    return apiClient.get(`/documents/${id}/status`)
+  },
+
+  getSseUrl: (docId: number): string => {
+    return `${baseURL}/documents/sse?docId=${docId}`
   }
 }

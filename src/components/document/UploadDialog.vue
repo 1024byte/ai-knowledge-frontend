@@ -60,7 +60,9 @@ const visible = defineModel<boolean>()
 const props = defineProps<{
   category?: string
 }>()
-const emit = defineEmits(['success'])
+const emit = defineEmits<{
+  success: [metaId: number]
+}>()
 
 const acceptTypes = '.txt,.md,.pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png'
 const fileList = ref<UploadFile[]>([])
@@ -84,12 +86,12 @@ const handleUpload = async () => {
   try {
     for (const file of fileList.value) {
       if (file.raw) {
-        await uploadFile(file.raw, props.category)
+        const result = await uploadFile(file.raw, props.category)
+        ElMessage.success('上传成功，正在后台处理中...')
+        emit('success', result.metaId)
       }
     }
 
-    ElMessage.success('上传成功')
-    emit('success')
     handleCancel()
   } catch (error: any) {
     ElMessage.error(error.message || '上传失败')

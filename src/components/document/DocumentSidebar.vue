@@ -78,15 +78,41 @@
             <div
               v-for="(item, index) in categoryFiles"
               :key="index"
-              class="file-item"
+              :class="['file-item', { 'is-processing': item.status === 'processing' }]"
+              @dblclick="handleFileClick(item)"
             >
-              <el-icon class="file-icon" :size="16"><document /></el-icon>
+              <el-icon v-if="item.status === 'processing'" class="file-icon is-spinning" :size="16"><loading /></el-icon>
+              <el-icon v-else class="file-icon" :size="16"><document /></el-icon>
               <div class="file-info">
                 <span class="file-name" :title="item.fileName">{{ item.fileName }}</span>
                 <div class="file-meta">
                   <el-tag size="small" type="info" class="type-tag">{{ item.fileType }}</el-tag>
                   <span class="meta-text">{{ formatFileSize(item.fileSize) }}</span>
-                  <span class="meta-text">{{ item.chunkCount }} 块</span>
+                  <span v-if="item.status === 'active'" class="meta-text">{{ item.chunkCount }} 块</span>
+                  <el-tag
+                    v-if="item.status === 'processing'"
+                    size="small"
+                    type="warning"
+                    class="status-tag"
+                  >
+                    <el-icon class="is-spinning" :size="10"><loading /></el-icon>
+                    处理中
+                  </el-tag>
+                  <el-tag
+                    v-else-if="item.status === 'active'"
+                    size="small"
+                    type="success"
+                    class="status-tag"
+                  >
+                    已完成
+                  </el-tag>
+                  <el-tooltip
+                    v-else-if="item.status === 'failed'"
+                    :content="item.errorMessage || '处理失败'"
+                    placement="top"
+                  >
+                    <el-tag size="small" type="danger" class="status-tag">失败</el-tag>
+                  </el-tooltip>
                 </div>
                 <span class="file-time">{{ formatUploadTime(item.uploadTime) }}</span>
               </div>
@@ -152,6 +178,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -161,11 +188,15 @@ import { documentApi } from '@/api/document'
 import { useDocumentStore } from '@/stores/document'
 import { formatFileSize } from '@/utils/format'
 import UploadDialog from '@/components/document/UploadDialog.vue'
+import { useDocumentTracker } from '@/composables/useDocumentTracker'
 import dayjs from 'dayjs'
 import type { DocumentFileRecord } from '@/types/document'
 
 const documentStore = useDocumentStore()
 const { categories } = storeToRefs(documentStore)
+const router = useRouter()
+
+const { onStatusChange, trackDocument, getDocStatus, cleanupAll } = useDocumentTracker()
 
 const activeCollapse = ref<string[]>(['folders'])
 const selectedCategory = ref('')
@@ -188,10 +219,24 @@ const formatUploadTime = (time: string) => {
   return dayjs(time).format('YYYY-MM-DD HH:mm')
 }
 
+const mergeTrackingStatus = (files: DocumentFileRecord[]) => {
+  return files.map((file) => {
+    const tracked = getDocStatus(file.id)
+    if (tracked) {
+      return { ...file, status: tracked.status, errorMessage: tracked.errorMessage }
+    }
+    if (!file.status) {
+      return { ...file, status: 'active', errorMessage: null }
+    }
+    return file
+  })
+}
+
 const fetchCategoryFiles = async (category: string) => {
   filesLoading.value = true
   try {
-    categoryFiles.value = await documentApi.getCategoryFiles(category)
+    const files = await documentApi.getCategoryFiles(category)
+    categoryFiles.value = mergeTrackingStatus(files)
   } catch (error) {
     console.error('Fetch category files error:', error)
     categoryFiles.value = []
@@ -216,10 +261,23 @@ const openUploadDialog = (cat: string) => {
   showUploadDialog.value = true
 }
 
-const handleUploadSuccess = () => {
+const handleUploadSuccess = (metaId: number) => {
+  trackDocument(metaId)
   if (selectedCategory.value) {
     fetchCategoryFiles(selectedCategory.value)
   }
+}
+
+const handleFileClick = (item: DocumentFileRecord) => {
+  const resolved = router.resolve({
+    name: 'DocumentContent',
+    params: { id: item.id },
+    query: {
+      fileName: item.fileName,
+      fileType: item.fileType
+    }
+  })
+  window.open(resolved.href, '_blank')
 }
 
 const handleDeleteDocument = async (item: DocumentFileRecord) => {
@@ -285,6 +343,12 @@ const handleClickOutside = () => {
   contextMenu.visible = false
 }
 
+onStatusChange.value = () => {
+  if (selectedCategory.value) {
+    fetchCategoryFiles(selectedCategory.value)
+  }
+}
+
 onMounted(() => {
   documentStore.fetchCategories()
   document.addEventListener('click', handleClickOutside)
@@ -292,6 +356,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  cleanupAll()
 })
 </script>
 
@@ -304,6 +369,15 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+}
+
+.is-spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .sidebar-body {
@@ -493,6 +567,12 @@ onUnmounted(() => {
   border-radius: 6px;
   background: var(--el-fill-color-lighter);
   transition: background 0.2s;
+  cursor: pointer;
+
+  &.is-processing {
+    background: var(--el-color-warning-light-9);
+    cursor: default;
+  }
 
   &:hover {
     background: var(--el-fill-color-light);
@@ -502,6 +582,10 @@ onUnmounted(() => {
     color: var(--el-color-primary);
     flex-shrink: 0;
     margin-top: 2px;
+
+    &.is-spinning {
+      color: var(--el-color-warning);
+    }
   }
 
   .file-info {
@@ -530,6 +614,17 @@ onUnmounted(() => {
         padding: 0 3px;
         height: 16px;
         line-height: 16px;
+      }
+
+      .status-tag {
+        font-size: 10px;
+        padding: 0 4px;
+        height: 18px;
+        line-height: 18px;
+
+        .el-icon {
+          margin-right: 2px;
+        }
       }
 
       .meta-text {
