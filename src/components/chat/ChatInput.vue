@@ -12,30 +12,43 @@
     
     <div class="input-actions">
       <span class="tip">按 Enter 发送，Shift + Enter 换行</span>
-      <el-button
-        type="primary"
-        :disabled="disabled || !inputValue.trim()"
-        @click="handleSend"
-      >
-        <el-icon><position /></el-icon>
-        发送
-      </el-button>
+      <div class="action-buttons">
+        <el-button
+          v-if="streaming"
+          type="danger"
+          @click="handleStop"
+        >
+          <el-icon><close-bold /></el-icon>
+          停止生成
+        </el-button>
+        <el-button
+          v-else
+          type="primary"
+          :disabled="disabled || !inputValue.trim()"
+          @click="handleSend"
+        >
+          <el-icon><position /></el-icon>
+          发送
+        </el-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Position } from '@element-plus/icons-vue'
+import { Position, CloseBold } from '@element-plus/icons-vue'
 
 const props = defineProps<{
   modelValue: string
   disabled?: boolean
+  streaming?: boolean
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
   'send': []
+  'stop': []
 }>()
 
 const inputValue = ref(props.modelValue)
@@ -49,9 +62,13 @@ watch(inputValue, (val) => {
 })
 
 const handleSend = () => {
-  if (inputValue.value.trim() && !props.disabled) {
+  if (inputValue.value.trim() && !props.disabled && !props.streaming) {
     emit('send')
   }
+}
+
+const handleStop = () => {
+  emit('stop')
 }
 </script>
 

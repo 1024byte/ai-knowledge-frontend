@@ -5,6 +5,7 @@ export interface ChatMessage {
   sources?: string[]
   processingTimeMs?: number
   timestamp: Date
+  streaming?: boolean
 }
 
 export interface ChatRequest {
@@ -36,4 +37,16 @@ export interface SessionInfo {
   sessionId: string
   preview: string
   lastActiveTime: string
+}
+
+export interface SSEStartEvent {
+  sessionId: string
+}
+
+export interface SSEDoneEvent {
+  sessionId: string
+}
+
+export interface SSEErrorEvent {
+  error: string
 }

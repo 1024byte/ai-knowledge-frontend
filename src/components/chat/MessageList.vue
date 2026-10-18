@@ -10,8 +10,8 @@
       :key="message.id"
       :message="message"
     />
-    
-    <div v-if="isLoading" class="loading-message">
+
+    <div v-if="isLoading && !isStreaming" class="loading-message">
       <div class="typing-indicator">
         <span></span>
         <span></span>
@@ -29,6 +29,7 @@ import type { ChatMessage } from '@/types/chat'
 defineProps<{
   messages: ChatMessage[]
   isLoading: boolean
+  isStreaming: boolean
 }>()
 </script>
 

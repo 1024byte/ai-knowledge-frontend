@@ -15,14 +15,16 @@
     </div>
 
     <div class="chat-messages" ref="messagesRef">
-      <message-list :messages="messages" :is-loading="isLoading" />
+      <message-list :messages="messages" :is-loading="isLoading" :is-streaming="isStreaming" />
     </div>
 
     <div class="chat-input">
       <chat-input
         v-model="inputMessage"
-        :disabled="isLoading"
+        :disabled="isLoading && !isStreaming"
+        :streaming="isStreaming"
         @send="handleSend"
+        @stop="handleStop"
       />
     </div>
 
@@ -81,9 +83,11 @@ import dayjs from 'dayjs'
 const {
   messages,
   isLoading,
+  isStreaming,
   sessionId,
   sessions,
   sendMessage,
+  stopStreaming,
   clearMessages,
   restoreSession,
   switchSession,
@@ -111,6 +115,10 @@ const handleSend = async () => {
 
   await nextTick()
   scrollToBottom()
+}
+
+const handleStop = () => {
+  stopStreaming()
 }
 
 const handleClear = async () => {

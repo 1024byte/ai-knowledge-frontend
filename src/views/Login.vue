@@ -171,7 +171,7 @@ const handleLogin = async () => {
       }
 
       ElMessage.success("登录成功")
-      router.push("/")
+      router.push("/knowledge")
     } catch {
       ElMessage.error("用户名或密码错误")
     } finally {

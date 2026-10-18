@@ -13,7 +13,17 @@
         </span>
       </div>
 
-      <div class="message-text" v-html="renderedContent"></div>
+      <div v-if="message.streaming && !message.content" class="message-text typing-wait">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <div v-if="message.content" class="message-text" v-html="renderedContent"></div>
+
+      <span v-if="message.streaming && message.content" class="typing-cursor">|</span>
 
       <div v-if="message.sources && message.sources.length > 0" class="message-sources">
         <span class="sources-label">参考来源：</span>
@@ -156,5 +166,46 @@ const renderedContent = computed(() => {
   .source-tag {
     font-size: 11px;
   }
+}
+
+.typing-wait {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+
+  span {
+    width: 8px;
+    height: 8px;
+    background: var(--el-text-color-secondary);
+    border-radius: 50%;
+    animation: typingDot 1.4s infinite ease-in-out;
+
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+
+.typing-cursor {
+  display: inline;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--el-color-primary);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 </style>

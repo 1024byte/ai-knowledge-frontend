@@ -12,6 +12,15 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/knowledge',
+    name: 'KnowledgeBase',
+    component: () => import('@/views/KnowledgeBase.vue'),
+    meta: {
+      title: '知识库管理',
+      requiresAuth: true
+    }
+  },
+  {
     path: '/',
     name: 'Home',
     component: () => import('@/layouts/MainLayout.vue'),
@@ -58,7 +67,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.name === 'Login' && token) {
-    next({ name: 'Home' })
+    next({ name: 'KnowledgeBase' })
     return
   }
 
