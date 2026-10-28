@@ -203,6 +203,7 @@ onMounted(() => {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  background: #ffffff;
 }
 
 .chat-header {

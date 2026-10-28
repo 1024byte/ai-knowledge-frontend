@@ -12,31 +12,78 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/knowledge',
-    name: 'KnowledgeBase',
-    component: () => import('@/views/KnowledgeBase.vue'),
-    meta: {
-      title: '知识库管理',
-      requiresAuth: true
-    }
-  },
-  {
     path: '/',
-    name: 'Home',
-    component: () => import('@/layouts/MainLayout.vue'),
+    component: () => import('@/layouts/SidebarLayout.vue'),
     meta: {
-      title: '智能问答',
       requiresAuth: true
-    }
-  },
-  {
-    path: '/document/:id',
-    name: 'DocumentContent',
-    component: () => import('@/views/DocumentContent.vue'),
-    meta: {
-      title: '文档内容',
-      requiresAuth: true
-    }
+    },
+    redirect: '/knowledge-management',
+    children: [
+      {
+        path: 'home',
+        name: 'Home',
+        component: () => import('@/views/HomePage.vue'),
+        meta: {
+          title: '系统首页'
+        }
+      },
+      {
+        path: 'ai-model',
+        name: 'AIModelConfig',
+        component: () => import('@/views/AIModelConfig.vue'),
+        meta: {
+          title: 'AI模型配置'
+        }
+      },
+      {
+        path: 'prompt-template',
+        name: 'PromptTemplate',
+        component: () => import('@/views/PromptTemplate.vue'),
+        meta: {
+          title: 'Prompt模板管理'
+        }
+      },
+      {
+        path: 'knowledge-management',
+        name: 'KnowledgeManagement',
+        component: () => import('@/views/KnowledgeManagement.vue'),
+        meta: {
+          title: '知识库管理'
+        }
+      },
+      {
+        path: 'knowledge-snippet',
+        name: 'KnowledgeSnippet',
+        component: () => import('@/views/KnowledgeSnippet.vue'),
+        meta: {
+          title: '知识片段管理'
+        }
+      },
+      {
+        path: 'chat',
+        name: 'Chat',
+        component: () => import('@/layouts/MainLayout.vue'),
+        meta: {
+          title: '智能问答'
+        }
+      },
+      {
+        path: 'session-review',
+        name: 'SessionReview',
+        component: () => import('@/views/SessionReview.vue'),
+        meta: {
+          title: '会话记录评价'
+        }
+      },
+      {
+        path: 'document/:id',
+        name: 'DocumentContent',
+        component: () => import('@/views/DocumentContent.vue'),
+        meta: {
+          title: '文档内容'
+        }
+      }
+    ]
   },
   {
     path: '/:pathMatch(.*)*',
@@ -67,7 +114,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.name === 'Login' && token) {
-    next({ name: 'KnowledgeBase' })
+    next({ name: 'KnowledgeManagement' })
     return
   }
 
