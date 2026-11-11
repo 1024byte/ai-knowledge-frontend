@@ -69,6 +69,7 @@ import {
   Setting,
   Document,
   FolderOpened,
+  Folder,
   Collection,
   ChatDotRound,
   DataAnalysis,
@@ -90,7 +91,8 @@ const menuItems = [
   { path: '/home', label: '系统首页', icon: HomeFilled },
   { path: '/ai-model', label: 'AI模型配置', icon: Setting },
   { path: '/prompt-template', label: 'Prompt模板管理', icon: Document },
-  { path: '/knowledge-management', label: '知识库管理', icon: FolderOpened },
+  { path: '/knowledge-base', label: '知识库管理', icon: FolderOpened },
+  { path: '/knowledge-management', label: '知识管理', icon: Folder },
   { path: '/knowledge-snippet', label: '知识片段管理', icon: Collection },
   { path: '/chat', label: '智能问答', icon: ChatDotRound },
   { path: '/session-review', label: '会话记录评价', icon: DataAnalysis }
@@ -101,6 +103,7 @@ const pageTitleMap: Record<string, string> = {
   '/ai-model': 'AI模型配置',
   '/prompt-template': 'Prompt模板管理',
   '/knowledge-management': '知识管理',
+  '/knowledge-base': '知识库管理',
   '/knowledge-snippet': '知识片段管理',
   '/chat': '智能问答',
   '/session-review': '会话记录评价'

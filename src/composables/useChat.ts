@@ -60,18 +60,34 @@ export function useChat() {
     }
   }
 
-  const tryStreamAsk = (question: string, topK: number, assistantIndex: number): Promise<boolean> => {
+  const tryStreamAsk = (question: string, topK: number, minScore: number, assistantIndex: number): Promise<boolean> => {
     return new Promise((resolve) => {
       let resolved = false
+      let messageId: string | null = null
+      let sourcesFetched = false
 
       chatApi.askStream(
         question,
         sessionId.value,
         topK,
+        minScore,
         {
+          onStart: (msgId: string, _sessId: string) => {
+            messageId = msgId
+            console.log('[Chat] SSE start, messageId:', messageId)
+          },
           onToken: (token: string) => {
             if (token) {
               messages.value[assistantIndex].content += token
+            }
+            if (!sourcesFetched && messageId) {
+              sourcesFetched = true
+              chatApi.getSources(messageId).then((data) => {
+                searchResults.value = data
+                console.log('[Chat] RAG 引用来源:', data.length, '条')
+              }).catch((err) => {
+                console.warn('[Chat] 获取引用来源失败:', err)
+              })
             }
           },
           onDone: (_sessionId: string) => {
@@ -106,11 +122,11 @@ export function useChat() {
     })
   }
 
-  const fallbackAsk = async (question: string, topK: number, assistantIndex: number) => {
+  const fallbackAsk = async (question: string, topK: number, minScore: number, assistantIndex: number) => {
     const msg = messages.value[assistantIndex]
     console.log('[Chat] 使用旧接口 /chat/ask')
     try {
-      const response = await chatApi.ask(question, sessionId.value, topK)
+      const response = await chatApi.ask(question, sessionId.value, topK, minScore)
       msg.content = response.answer
       msg.sources = response.sources
       msg.processingTimeMs = response.processingTimeMs
@@ -124,7 +140,7 @@ export function useChat() {
     }
   }
 
-  const sendMessage = async (question: string, topK: number = 3) => {
+  const sendMessage = async (question: string, topK: number = 15, minScore: number = 0.6) => {
     ensureSessionId()
 
     console.log('[Chat] 发送问题:', question.substring(0, 50))
@@ -152,7 +168,7 @@ export function useChat() {
     isStreaming.value = true
     abortController = new AbortController()
 
-    const streamSuccess = await tryStreamAsk(question, topK, assistantIndex)
+    const streamSuccess = await tryStreamAsk(question, topK, minScore, assistantIndex)
 
     if (!streamSuccess) {
       const wasAborted = abortController === null
@@ -164,7 +180,7 @@ export function useChat() {
       } else {
         messages.value[assistantIndex].content = ''
         messages.value[assistantIndex].streaming = true
-        await fallbackAsk(question, topK, assistantIndex)
+        await fallbackAsk(question, topK, minScore, assistantIndex)
       }
     }
 

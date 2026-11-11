@@ -1,31 +1,47 @@
 ﻿<template>
   <div class="main-layout">
-    <el-container class="layout-container">
-      <document-sidebar />
-      <el-main class="chat-main">
-        <chat-container />
-      </el-main>
-    </el-container>
+    <div class="main-panel">
+      <chat-container @search-results="handleSearchResults" />
+    </div>
+
+    <div class="side-panel">
+      <rag-references :search-results="searchResults" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import DocumentSidebar from '@/components/document/DocumentSidebar.vue'
+import { ref } from 'vue'
 import ChatContainer from '@/components/chat/ChatContainer.vue'
+import RagReferences from '@/components/chat/RagReferences.vue'
+import type { SearchResult } from '@/types/chat'
+
+const searchResults = ref<SearchResult[]>([])
+
+const handleSearchResults = (results: SearchResult[]) => {
+  searchResults.value = results
+}
 </script>
 
 <style scoped lang="scss">
 .main-layout {
+  display: flex;
   height: 100%;
   overflow: hidden;
 }
 
-.layout-container {
-  height: 100%;
+.main-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-.chat-main {
-  padding: 0;
-  overflow: hidden;
+.side-panel {
+  width: 340px;
+  min-width: 340px;
+  border-left: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
 }
 </style>

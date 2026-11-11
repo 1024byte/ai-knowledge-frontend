@@ -5,16 +5,18 @@ import { getToken } from '@/utils/auth'
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 export const chatApi = {
-  ask: (question: string, sessionId: string, topK: number = 3): Promise<ChatResponse> => {
-    const data: ChatRequest = { question, sessionId, topK }
+  ask: (question: string, sessionId: string, topK: number = 15, minScore: number = 0.6): Promise<ChatResponse> => {
+    const data: ChatRequest = { question, sessionId, topK, minScore }
     return apiClient.post('/chat/ask', data)
   },
 
   askStream: async (
     question: string,
     sessionId: string,
-    topK: number = 3,
+    topK: number = 15,
+    minScore: number = 0.6,
     callbacks: {
+      onStart?: (messageId: string, sessionId: string) => void
       onToken: (token: string) => void
       onDone: (sessionId: string) => void
       onError: (error: string) => void
@@ -32,7 +34,7 @@ export const chatApi = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${getToken()}`
         },
-        body: JSON.stringify({ question, sessionId, topK }),
+        body: JSON.stringify({ question, sessionId, topK, minScore }),
         signal
       })
     } catch (err: any) {
@@ -90,6 +92,12 @@ export const chatApi = {
       switch (eventType) {
         case 'start':
           console.log('[SSE] start:', eventData)
+          try {
+            const parsed = JSON.parse(eventData)
+            callbacks.onStart?.(parsed.messageId, parsed.sessionId)
+          } catch {
+            callbacks.onStart?.('', '')
+          }
           break
         case 'token':
           callbacks.onToken(eventData)
@@ -177,6 +185,10 @@ export const chatApi = {
 
   search: (query: string, topK: number = 5): Promise<SearchResult[]> => {
     return apiClient.get('/chat/search', { params: { query, topK } })
+  },
+
+  getSources: (messageId: string): Promise<SearchResult[]> => {
+    return apiClient.get(`/chat/sources/${messageId}`)
   },
 
   getHistory: (sessionId: string): Promise<HistoryMessage[]> => {

@@ -1,5 +1,5 @@
 import apiClient from './index'
-import type { KnowledgeDocument, KnowledgeDocumentQuery, KnowledgeDocumentPageResult } from '@/types/knowledge-management'
+import type { KnowledgeDocument, KnowledgeDocumentQuery, KnowledgeDocumentPageResult, ChunksPreviewResponse, BatchChunkResult, DocumentContentResponse, SaveDocumentContentRequest, SaveChunksRequest } from '@/types/knowledge-management'
 
 export const knowledgeManagementApi = {
   getList: (params: KnowledgeDocumentQuery): Promise<KnowledgeDocumentPageResult> => {
@@ -18,12 +18,32 @@ export const knowledgeManagementApi = {
     })
   },
 
-  parse: (id: number): Promise<void> => {
+  parse: (id: number): Promise<KnowledgeDocument> => {
     return apiClient.post(`/knowledge-documents/${id}/parse`)
   },
 
-  slice: (id: number): Promise<void> => {
-    return apiClient.post(`/knowledge-documents/${id}/slice`)
+  getContent: (id: number): Promise<DocumentContentResponse> => {
+    return apiClient.get(`/knowledge-documents/${id}/content`)
+  },
+
+  saveContent: (id: number, data: SaveDocumentContentRequest): Promise<void> => {
+    return apiClient.put(`/knowledge-documents/${id}/content`, data)
+  },
+
+  getChunks: (id: number): Promise<ChunksPreviewResponse> => {
+    return apiClient.get(`/knowledge-documents/${id}/chunks`)
+  },
+
+  saveChunks: (id: number, data: SaveChunksRequest): Promise<void> => {
+    return apiClient.put(`/knowledge-documents/${id}/chunks`, data)
+  },
+
+  autoChunkBatch: (ids: number[]): Promise<BatchChunkResult> => {
+    return apiClient.post('/knowledge-documents/auto-chunk', ids)
+  },
+
+  vectorize: (id: number): Promise<KnowledgeDocument> => {
+    return apiClient.post(`/knowledge-documents/${id}/vectorize`)
   },
 
   delete: (id: number): Promise<void> => {
@@ -37,9 +57,5 @@ export const knowledgeManagementApi = {
   download: (id: number): string => {
     const baseURL = import.meta.env.VITE_API_BASE_URL || ''
     return `${baseURL}/knowledge-documents/${id}/download`
-  },
-
-  getKnowledgeBases: (): Promise<string[]> => {
-    return apiClient.get('/knowledge-documents/knowledge-bases')
   }
 }

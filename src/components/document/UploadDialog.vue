@@ -93,8 +93,8 @@ const handleUpload = async () => {
     }
 
     handleCancel()
-  } catch (error: any) {
-    ElMessage.error(error.message || '上传失败')
+  } catch {
+    // 错误提示已由请求拦截器统一处理
   }
 }
 

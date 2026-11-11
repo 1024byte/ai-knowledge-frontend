@@ -12,6 +12,7 @@ export interface ChatRequest {
   question: string
   sessionId: string
   topK?: number
+  minScore?: number
 }
 
 export interface ChatResponse {
@@ -41,6 +42,7 @@ export interface SessionInfo {
 
 export interface SSEStartEvent {
   sessionId: string
+  messageId: string
 }
 
 export interface SSEDoneEvent {

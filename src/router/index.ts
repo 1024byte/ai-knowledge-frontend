@@ -48,6 +48,14 @@ const routes: RouteRecordRaw[] = [
         name: 'KnowledgeManagement',
         component: () => import('@/views/KnowledgeManagement.vue'),
         meta: {
+          title: '知识管理'
+        }
+      },
+      {
+        path: 'knowledge-base',
+        name: 'KnowledgeBaseManagement',
+        component: () => import('@/views/KnowledgeBaseManagement.vue'),
+        meta: {
           title: '知识库管理'
         }
       },

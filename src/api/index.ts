@@ -114,7 +114,7 @@ apiClient.interceptors.response.use(
     const result = error.response?.data as ApiResult | undefined
     const message = result?.message || error.message || '请求失败'
     ElMessage.error(message)
-    return Promise.reject(error)
+    return Promise.reject(new Error(message))
   }
 )
 

@@ -3,7 +3,7 @@
     <el-result icon="success" title="系统首页" sub-title="欢迎使用 AI 智能知识库系统">
       <template #extra>
         <el-button type="primary" @click="$router.push('/knowledge-management')">
-          进入知识库管理
+          进入知识管理
         </el-button>
       </template>
     </el-result>
