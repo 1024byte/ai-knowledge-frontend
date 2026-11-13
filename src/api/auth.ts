@@ -36,10 +36,6 @@ export const authApi = {
     return apiClient.post('/auth/login', data)
   },
 
-  register: (data: { username: string; password: string; email?: string; deviceId: string }): Promise<LoginResponse> => {
-    return apiClient.post('/auth/register', data)
-  },
-
   refresh: (data: RefreshRequest): Promise<RefreshResponse> => {
     return apiClient.post('/auth/refresh', data)
   },

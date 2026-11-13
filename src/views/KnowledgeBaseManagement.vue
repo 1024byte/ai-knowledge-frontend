@@ -74,9 +74,14 @@
 
         <el-table-column prop="createdAt" label="创建时间" width="180" align="center" />
 
-        <el-table-column label="操作" width="120" fixed="right" align="center">
+        <el-table-column label="操作" width="180" fixed="right" align="center">
           <template #default="{ row }">
             <div class="action-btns">
+              <el-tooltip content="成员管理" placement="top">
+                <span class="action-btn member-btn" @click="handleManageMembers(row)">
+                  <el-icon :size="16"><UserFilled /></el-icon>
+                </span>
+              </el-tooltip>
               <span class="action-btn edit-btn" @click="handleEdit(row)">
                 <el-icon :size="16"><Edit /></el-icon>
               </span>
@@ -207,9 +212,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
-import { Search, Plus, Edit, Delete } from '@element-plus/icons-vue'
+import { Search, Plus, Edit, Delete, UserFilled } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import { knowledgeBaseApi } from '@/api/knowledgeBase'
 import type { KnowledgeBaseItem, KnowledgeBaseCreateRequest, KnowledgeBaseUpdateRequest } from '@/types/knowledge-base'
+
+const router = useRouter()
 
 const searchName = ref('')
 const searchStatus = ref<number | ''>('')
@@ -436,6 +444,10 @@ const handleBatchDelete = async () => {
   }
 }
 
+const handleManageMembers = (row: KnowledgeBaseItem) => {
+  router.push({ path: '/member-management', query: { kbId: String(row.id) } })
+}
+
 onMounted(() => {
   fetchData()
 })
@@ -567,6 +579,14 @@ onMounted(() => {
 
   .el-icon {
     color: #ffffff;
+  }
+
+  &.member-btn {
+    background: #10b981;
+
+    &:hover {
+      background: #059669;
+    }
   }
 
   &.edit-btn {

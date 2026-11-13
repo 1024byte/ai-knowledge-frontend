@@ -68,6 +68,14 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'member-management',
+        name: 'MemberManagement',
+        component: () => import('@/views/MemberManagement.vue'),
+        meta: {
+          title: '成员管理'
+        }
+      },
+      {
         path: 'chat',
         name: 'Chat',
         component: () => import('@/layouts/MainLayout.vue'),
