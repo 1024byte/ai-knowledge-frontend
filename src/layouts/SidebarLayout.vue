@@ -89,7 +89,7 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const menuItems = [
-  { path: '/home', label: '系统首页', icon: HomeFilled },
+  { path: '/home', label: '系统看板', icon: HomeFilled },
   { path: '/ai-model', label: 'AI模型配置', icon: Setting },
   { path: '/prompt-template', label: 'Prompt模板管理', icon: Document },
   { path: '/knowledge-base', label: '知识库管理', icon: FolderOpened },
@@ -101,7 +101,7 @@ const menuItems = [
 ]
 
 const pageTitleMap: Record<string, string> = {
-  '/home': '系统首页',
+  '/home': '系统看板',
   '/ai-model': 'AI模型配置',
   '/prompt-template': 'Prompt模板管理',
   '/knowledge-management': '知识管理',

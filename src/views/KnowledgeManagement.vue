@@ -568,7 +568,7 @@ const handleParse = async (row: KnowledgeDocument) => {
   if (row.status === 2) {
     try {
       await ElMessageBox.confirm(
-        '该文档已完成解析，重新解析将覆盖原结果，确定继续吗？',
+        '该文档已完成解析，重新解析将清理已有切片并需要手动重新生成，确定继续吗？',
         '重新解析确认',
         { type: 'warning', confirmButtonText: '确定', cancelButtonText: '取消' }
       )

@@ -144,7 +144,7 @@
             :step="10"
             placeholder="切片长度"
           />
-          <span class="form-tip">字符数，建议 300 ~ 800</span>
+          <span class="form-tip">Token，建议 300 ~ 800</span>
         </el-form-item>
 
         <el-form-item label="重叠长度" prop="overlapLength">
@@ -155,13 +155,14 @@
             :step="10"
             placeholder="重叠长度"
           />
-          <span class="form-tip">字符数，建议为切片长度的 10%~20%</span>
+          <span class="form-tip">Token，建议为切片长度的 10%~20%</span>
         </el-form-item>
 
         <el-divider content-position="left">高级配置</el-divider>
 
         <el-form-item label="切片策略" prop="splitStrategy">
           <el-select v-model="formData.splitStrategy" placeholder="请选择切片策略">
+            <el-option label="自动" value="AUTO" />
             <el-option label="递归字符分割" value="RECURSIVE" />
             <el-option label="按句子分割" value="SENTENCE" />
             <el-option label="按段落分割" value="PARAGRAPH" />
@@ -242,6 +243,7 @@ const formData = reactive({
 })
 
 const splitStrategyMap: Record<string, string> = {
+  AUTO: '自动',
   RECURSIVE: '递归字符分割',
   SENTENCE: '按句子分割',
   PARAGRAPH: '按段落分割',
@@ -326,7 +328,7 @@ const resetForm = () => {
   formData.description = ''
   formData.chunkLength = 500
   formData.overlapLength = 80
-  formData.splitStrategy = 'RECURSIVE'
+  formData.splitStrategy = 'AUTO'
   formData.embeddingModel = 'text-embedding-3-small'
   formData.retrievalTopK = 5
   formData.similarityThreshold = 0.7

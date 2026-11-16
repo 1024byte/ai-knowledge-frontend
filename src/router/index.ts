@@ -24,7 +24,7 @@ const routes: RouteRecordRaw[] = [
         name: 'Home',
         component: () => import('@/views/HomePage.vue'),
         meta: {
-          title: '系统首页'
+          title: '系统看板'
         }
       },
       {

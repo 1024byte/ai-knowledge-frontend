@@ -2,7 +2,7 @@
   <el-dialog
     :model-value="visible"
     :title="`切片编辑: ${preview.fileName || ''}`"
-    width="900px"
+    width="70%"
     :close-on-click-modal="false"
     destroy-on-close
     @update:model-value="$emit('update:visible', $event)"
