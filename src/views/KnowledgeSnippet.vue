@@ -158,7 +158,15 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="操作" width="140" align="center" fixed="right">
+            <el-table-column label="向量化状态" width="90" align="center">
+              <template #default="{ row }">
+                <el-tag :type="chunkVectorStatusTag(row)" size="small">
+                  {{ chunkVectorStatusText(row) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="操作" width="240" align="center" fixed="right">
               <template #default="{ row }">
                 <div class="action-btns">
                   <el-button link type="primary" size="small" :disabled="!canEdit" @click="openEdit(row)">
@@ -166,6 +174,18 @@
                   </el-button>
                   <el-button link type="warning" size="small" :disabled="!canEdit" @click="openSplit(row)">
                     拆分
+                  </el-button>
+                  <el-button
+                    link
+                    type="success"
+                    size="small"
+                    :disabled="!canRevectorize(row)"
+                    @click="handleRevectorize(row)"
+                  >
+                    向量化
+                  </el-button>
+                  <el-button link type="danger" size="small" :disabled="!canEdit" @click="handleDelete(row)">
+                    删除
                   </el-button>
                 </div>
               </template>
@@ -194,6 +214,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Refresh, Search, WarningFilled } from '@element-plus/icons-vue'
 import { knowledgeManagementApi } from '@/api/knowledge-management'
@@ -205,6 +226,8 @@ import type { KnowledgeDocument } from '@/types/knowledge-management'
 import type { ChunkListResponse, SavedChunkItem } from '@/types/knowledge-chunk'
 
 const userStore = useUserStore()
+
+const route = useRoute()
 
 const headerCellStyle = {
   background: '#f8fafc',
@@ -270,6 +293,34 @@ const parseStatusTagType = (doc: KnowledgeDocument) => {
   if (status === 'parsing') return 'warning'
   if (status === 'failed') return 'danger'
   return 'info'
+}
+
+const VECTOR_STATUS_TEXT: Record<string, string> = {
+  pending: '待处理',
+  processing: '处理中',
+  completed: '已完成',
+  failed: '失败'
+}
+
+const VECTOR_STATUS_TAG: Record<string, 'info' | 'warning' | 'success' | 'danger'> = {
+  pending: 'info',
+  processing: 'warning',
+  completed: 'success',
+  failed: 'danger'
+}
+
+const VECTOR_STATUS_BY_CODE = ['pending', 'processing', 'completed', 'failed']
+
+const chunkVectorStatus = (row: SavedChunkItem): string => {
+  return row.vectorStatusText || VECTOR_STATUS_BY_CODE[row.vectorStatus] || 'pending'
+}
+
+const chunkVectorStatusText = (row: SavedChunkItem): string => {
+  return VECTOR_STATUS_TEXT[chunkVectorStatus(row)] || chunkVectorStatus(row)
+}
+
+const chunkVectorStatusTag = (row: SavedChunkItem) => {
+  return VECTOR_STATUS_TAG[chunkVectorStatus(row)] || 'info'
 }
 
 const filteredDocs = computed(() => {
@@ -347,7 +398,11 @@ const loadDocuments = async () => {
   try {
     const result = await knowledgeManagementApi.getList({ pageNum: 1, pageSize: 100 })
     docs.value = result.records || []
-    if (!currentDocId.value && docs.value.length) {
+    const targetId = Number(route.query.documentId)
+    const target = targetId ? docs.value.find((d) => d.id === targetId) : undefined
+    if (target) {
+      selectDocument(target)
+    } else if (!currentDocId.value && docs.value.length) {
       const first = docs.value.find((d) => normalizeParseStatus(d) === 'parsed') || docs.value[0]
       selectDocument(first)
     }
@@ -479,6 +534,44 @@ const openEdit = (row: SavedChunkItem) => {
 const openSplit = (row: SavedChunkItem) => {
   splittingChunk.value = row
   splitVisible.value = true
+}
+
+const canRevectorize = (row: SavedChunkItem): boolean => {
+  return canEdit.value && chunkVectorStatus(row) !== 'processing'
+}
+
+const handleRevectorize = async (row: SavedChunkItem) => {
+  try {
+    await chunkApi.revectorize(row.id)
+    row.vectorStatusText = 'processing'
+    ElMessage.success('片段已提交重新向量化，后台处理中...')
+  } catch {
+    // 错误提示已由请求拦截器统一处理
+  }
+}
+
+const handleDelete = async (row: SavedChunkItem) => {
+  try {
+    await ElMessageBox.confirm(
+      '确定删除该片段？删除后将同步清理索引与向量数据，并重排剩余片段。',
+      '删除确认',
+      {
+        type: 'warning',
+        confirmButtonText: '确定删除',
+        cancelButtonText: '取消'
+      }
+    )
+  } catch {
+    return
+  }
+
+  try {
+    await chunkApi.remove(row.id)
+    ElMessage.success('片段已删除')
+    await loadChunks()
+  } catch {
+    // 错误提示已由请求拦截器统一处理
+  }
 }
 
 onMounted(() => {

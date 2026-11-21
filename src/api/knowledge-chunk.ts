@@ -29,5 +29,13 @@ export const chunkApi = {
 
   setEnabled: (data: SetChunksEnabledRequest): Promise<SavedChunkItem[]> => {
     return apiClient.put(`${BASE}/enabled`, data)
+  },
+
+  remove: (chunkId: number): Promise<void> => {
+    return apiClient.delete(`${BASE}/${chunkId}`)
+  },
+
+  revectorize: (chunkId: number): Promise<void> => {
+    return apiClient.post(`${BASE}/${chunkId}/revectorize`)
   }
 }

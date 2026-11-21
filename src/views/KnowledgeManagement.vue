@@ -151,11 +151,18 @@
               向量化中
             </el-tag>
             <el-tag
-              v-else-if="row.vectorStatus === 'failed'"
+              v-else-if="row.vectorStatus === 'all_failed'"
               type="danger"
               size="small"
             >
-              向量化失败
+              全部失败
+            </el-tag>
+            <el-tag
+              v-else-if="row.vectorStatus === 'partial_failed'"
+              type="warning"
+              size="small"
+            >
+              部分失败
             </el-tag>
             <el-tag
               v-else-if="row.vectorStatus === 'unvectorized'"
@@ -450,9 +457,11 @@ const normalizeDocument = (doc: KnowledgeDocument): KnowledgeDocument => {
           ? 'vectorizing'
           : doc.isVectorized === 2
             ? 'vectorized'
-            : doc.isVectorized === 3
-              ? 'failed'
-              : 'unvectorized')
+            : doc.isVectorized === 4
+              ? 'partial_failed'
+              : doc.isVectorized === 5
+                ? 'all_failed'
+                : 'unvectorized')
   }
 }
 
@@ -550,17 +559,22 @@ const handleUploadSubmit = async () => {
 }
 
 const canParse = (row: KnowledgeDocument): boolean => {
-  return row.parseStatus !== 'parsing' && row.vectorStatus !== 'vectorized'
+  return (
+    row.parseStatus !== 'parsing' &&
+    row.vectorStatus !== 'vectorized' &&
+    row.vectorStatus !== 'partial_failed'
+  )
 }
 
 const parseTooltip = (row: KnowledgeDocument): string => {
   if (row.parseStatus === 'parsing') return '解析中...'
-  if (row.vectorStatus === 'vectorized') return '已向量化，无法重新解析'
+  if (row.vectorStatus === 'vectorized' || row.vectorStatus === 'partial_failed')
+    return '已向量化，无法重新解析'
   return '解析'
 }
 
 const handleParse = async (row: KnowledgeDocument) => {
-  if (row.vectorStatus === 'vectorized') {
+  if (row.vectorStatus === 'vectorized' || row.vectorStatus === 'partial_failed') {
     ElMessage.warning('文档已向量化，无法重新解析')
     return
   }
@@ -645,7 +659,8 @@ const pollParseStatus = async (documentId: number, intervalMs = 3000, timeoutMs 
 
 const handleSlice = (row: KnowledgeDocument) => {
   chunkEditorDocumentId.value = row.id
-  chunkEditorVectorized.value = row.vectorStatus === 'vectorized'
+  chunkEditorVectorized.value =
+    row.vectorStatus === 'vectorized' || row.vectorStatus === 'partial_failed'
   chunkEditorVisible.value = true
 }
 
@@ -654,23 +669,36 @@ const onChunksSaved = () => {
 }
 
 const canVectorize = (row: KnowledgeDocument): boolean => {
-  return (
-    row.parseStatus === 'parsed' &&
-    row.chunkCount > 0 &&
-    (row.vectorStatus === 'unvectorized' || row.vectorStatus === 'failed')
-  )
+  return row.parseStatus === 'parsed' && row.chunkCount > 0 && row.vectorStatus !== 'vectorizing'
 }
 
 const vectorizeTooltip = (row: KnowledgeDocument): string => {
   if (row.parseStatus !== 'parsed') return '请先完成解析'
   if (row.chunkCount === 0) return '请先完成切片'
-  if (row.vectorStatus === 'vectorized') return '已向量化'
   if (row.vectorStatus === 'vectorizing') return '向量化中...'
-  if (row.vectorStatus === 'failed') return '向量化失败，可重试'
+  if (row.vectorStatus === 'vectorized') return '重新向量化'
+  if (row.vectorStatus === 'partial_failed') return '部分失败，重新向量化'
+  if (row.vectorStatus === 'all_failed') return '全部失败，重新向量化'
   return '向量化'
 }
 
 const handleVectorize = async (row: KnowledgeDocument) => {
+  const isReVectorize = ['vectorized', 'partial_failed', 'all_failed'].includes(row.vectorStatus)
+  if (isReVectorize) {
+    try {
+      await ElMessageBox.confirm(
+        '该文档已有片段完成向量化，重新向量化会覆盖所有已存储的向量数据，确定继续吗？',
+        '重新向量化确认',
+        {
+          confirmButtonText: '确定覆盖',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+    } catch {
+      return
+    }
+  }
   try {
     const result = await knowledgeManagementApi.vectorize(row.id)
     row.isVectorized = result.isVectorized
@@ -705,7 +733,9 @@ const pollVectorizeStatus = async (documentId: number, intervalMs = 3000, timeou
 
       if (doc.vectorStatus === 'vectorized') {
         ElMessage.success(`文档「${doc.title || doc.fileName}」向量化完成`)
-      } else if (doc.vectorStatus === 'failed') {
+      } else if (doc.vectorStatus === 'partial_failed') {
+        ElMessage.warning(`文档「${doc.title || doc.fileName}」部分片段向量化失败`)
+      } else if (doc.vectorStatus === 'all_failed') {
         ElMessage.error(`向量化失败: ${doc.errorMessage || '未知错误'}`)
       } else {
         schedulePoll(poll, intervalMs)
@@ -719,12 +749,17 @@ const pollVectorizeStatus = async (documentId: number, intervalMs = 3000, timeou
 }
 
 const canEdit = (row: KnowledgeDocument): boolean => {
-  return row.parseStatus === 'parsed' && row.vectorStatus !== 'vectorized'
+  return (
+    row.parseStatus === 'parsed' &&
+    row.vectorStatus !== 'vectorized' &&
+    row.vectorStatus !== 'partial_failed'
+  )
 }
 
 const editTooltip = (row: KnowledgeDocument): string => {
   if (row.parseStatus !== 'parsed') return '请先完成解析'
-  if (row.vectorStatus === 'vectorized') return '已向量化，无法编辑'
+  if (row.vectorStatus === 'vectorized' || row.vectorStatus === 'partial_failed')
+    return '已向量化，无法编辑'
   return '编辑'
 }
 
@@ -799,7 +834,9 @@ const handleBatchAutoChunk = async () => {
   }
 
   const vectorizedCount = tableData.value.filter(
-    (item) => selectedIds.value.includes(item.id) && item.vectorStatus === 'vectorized'
+    (item) =>
+      selectedIds.value.includes(item.id) &&
+      (item.vectorStatus === 'vectorized' || item.vectorStatus === 'partial_failed')
   ).length
   if (vectorizedCount > 0) {
     ElMessage.warning(`选中的文档中有 ${vectorizedCount} 个已向量化，无法重新切片，请先取消选择这些文档`)

@@ -68,6 +68,14 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'recall-test',
+        name: 'RecallTest',
+        component: () => import('@/views/RecallTest.vue'),
+        meta: {
+          title: '召回测试'
+        }
+      },
+      {
         path: 'member-management',
         name: 'MemberManagement',
         component: () => import('@/views/MemberManagement.vue'),

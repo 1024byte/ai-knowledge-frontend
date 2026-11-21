@@ -9,9 +9,9 @@ export interface KnowledgeDocument {
   fileHash: string
   parsedTextUrl: string | null
   status: number // 0-待处理, 1-处理中, 2-已完成, 3-失败（纯解析状态）
-  isVectorized: number | null // null=未触发, 0=待向量化, 1=向量化中, 2=已完成, 3=失败
+  isVectorized: number | null // null=未触发, 0=待向量化, 1=向量化中, 2=已完成, 4=部分失败, 5=全部失败
   parseStatus: 'unparsed' | 'parsing' | 'parsed' | 'failed'
-  vectorStatus: 'unvectorized' | 'vectorizing' | 'vectorized' | 'failed'
+  vectorStatus: 'unvectorized' | 'vectorizing' | 'vectorized' | 'partial_failed' | 'all_failed'
   errorMessage: string | null
   chunkCount: number
   tokenCount: number
@@ -49,6 +49,9 @@ export interface ChunkItem {
   text: string
   tokenCount: number
   contextPrefix: string
+  enabled?: boolean
+  vectorStatus?: number
+  vectorStatusText?: string
   metadata: ChunkMetadata
 }
 

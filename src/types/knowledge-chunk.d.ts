@@ -12,6 +12,8 @@ export interface SavedChunkItem {
   text: string
   tokenCount: number
   enabled: boolean
+  vectorStatus: number
+  vectorStatusText: string
   contextPrefix: string
   metadata: SavedChunkMetadata
 }
