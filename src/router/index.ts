@@ -76,6 +76,14 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'param-management',
+        name: 'ParamManagement',
+        component: () => import('@/views/ParameterManagement.vue'),
+        meta: {
+          title: '参数管理'
+        }
+      },
+      {
         path: 'member-management',
         name: 'MemberManagement',
         component: () => import('@/views/MemberManagement.vue'),

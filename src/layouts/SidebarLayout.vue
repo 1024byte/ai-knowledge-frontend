@@ -74,6 +74,7 @@ import {
   ChatDotRound,
   DataAnalysis,
   Search,
+  Operation,
   SwitchButton,
   Reading,
   UserFilled,
@@ -97,6 +98,7 @@ const menuItems = [
   { path: '/knowledge-management', label: '知识管理', icon: Folder },
   { path: '/knowledge-snippet', label: '知识片段管理', icon: Collection },
   { path: '/recall-test', label: '召回测试', icon: Search },
+  { path: '/param-management', label: '参数管理', icon: Operation },
   { path: '/member-management', label: '成员管理', icon: User },
   { path: '/chat', label: '智能问答', icon: ChatDotRound },
   { path: '/session-review', label: '会话记录评价', icon: DataAnalysis }
@@ -110,6 +112,7 @@ const pageTitleMap: Record<string, string> = {
   '/knowledge-base': '知识库管理',
   '/knowledge-snippet': '知识片段管理',
   '/recall-test': '召回测试',
+  '/param-management': '参数管理',
   '/member-management': '成员管理',
   '/chat': '智能问答',
   '/session-review': '会话记录评价'
