@@ -2,21 +2,6 @@
   <div class="param-management">
     <div class="toolbar">
       <div class="toolbar-left">
-        <el-select
-          v-model="selectedKbId"
-          class="scope-select"
-          placeholder="选择作用域"
-          filterable
-          @change="fetchParams"
-        >
-          <el-option label="全局配置（GLOBAL）" :value="0" />
-          <el-option
-            v-for="kb in kbOptions"
-            :key="kb.id"
-            :label="kb.name"
-            :value="kb.id"
-          />
-        </el-select>
         <el-button :loading="loading" @click="fetchParams">
           <el-icon :size="16"><Refresh /></el-icon>
           <span>刷新</span>
@@ -27,9 +12,9 @@
           <el-icon :size="16"><Clock /></el-icon>
           <span>操作历史</span>
         </el-button>
-        <el-button v-if="isAdmin" type="danger" plain @click="handleResetScope">
+        <el-button v-if="isAdmin" type="danger" plain @click="handleResetGlobal">
           <el-icon :size="16"><Delete /></el-icon>
-          <span>重置本作用域</span>
+          <span>重置全局配置</span>
         </el-button>
       </div>
     </div>
@@ -37,7 +22,7 @@
     <div class="scope-hint">
       <el-icon :size="14"><InfoFilled /></el-icon>
       <span>
-        当前作用域：<strong>{{ scopeLabel }}</strong>，生效优先级：知识库覆盖 &gt; 全局已应用 &gt; 元数据默认值
+        以下参数对所有知识库统一生效，生效优先级：全局已应用 &gt; 元数据默认值
       </span>
     </div>
 
@@ -97,7 +82,7 @@
                 <div class="effective-value">{{ formatValue(row, row.effectiveValue) }}</div>
                 <div class="value-state">
                   <el-tag v-if="hasDraft(row)" size="small" type="warning">有草稿未应用</el-tag>
-                  <el-tag v-else-if="hasApplied(row)" size="small" type="success">本作用域已配置</el-tag>
+                  <el-tag v-else-if="hasApplied(row)" size="small" type="success">全局已配置</el-tag>
                   <span v-else class="value-state-default">使用默认值</span>
                 </div>
               </template>
@@ -257,23 +242,16 @@ import { computed, onMounted, ref } from 'vue'
 import { Clock, Delete, InfoFilled, Refresh } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { paramApi } from '@/api/param'
-import { knowledgeBaseApi } from '@/api/knowledgeBase'
 import { useUserStore } from '@/stores/user'
 import type { ParamItemVO, ParamHistory, ParamType, ParamAction } from '@/types/param'
-import type { KnowledgeBaseItem } from '@/types/knowledge-base'
-
-const GLOBAL_SCOPE_ID = 0
 
 const userStore = useUserStore()
 
-const categories = ['检索', '精排', '降权']
-
 const params = ref<ParamItemVO[]>([])
-const kbOptions = ref<KnowledgeBaseItem[]>([])
-const selectedKbId = ref<number>(GLOBAL_SCOPE_ID)
 const loading = ref(false)
 const submitting = ref(false)
-const activeCollapse = ref<string[]>([...categories])
+const activeCollapse = ref<string[]>([])
+let collapseInitialized = false
 
 const editVisible = ref(false)
 const editForm = ref<ParamItemVO | null>(null)
@@ -301,23 +279,21 @@ const isAdmin = computed(() => {
   return ADMIN_ROLES.includes(role)
 })
 
-const scopeKbId = computed<number | null>(() =>
-  selectedKbId.value === GLOBAL_SCOPE_ID ? null : selectedKbId.value
-)
-
-const scopeLabel = computed(() => {
-  if (selectedKbId.value === GLOBAL_SCOPE_ID) return '全局（GLOBAL）'
-  return kbOptions.value.find((kb) => kb.id === selectedKbId.value)?.name ?? '知识库'
-})
-
-const groupedParams = computed(() =>
-  categories.map((category) => ({
+const groupedParams = computed(() => {
+  const groups = new Map<string, ParamItemVO[]>()
+  params.value.forEach((item) => {
+    const list = groups.get(item.category)
+    if (list) {
+      list.push(item)
+    } else {
+      groups.set(item.category, [item])
+    }
+  })
+  return Array.from(groups, ([category, items]) => ({
     category,
-    items: params.value
-      .filter((p) => p.category === category)
-      .sort((a, b) => a.sortOrder - b.sortOrder)
+    items: [...items].sort((a, b) => a.sortOrder - b.sortOrder)
   }))
-)
+})
 
 const parseNum = (v: string | null | undefined): number | null => {
   if (v == null || v === '') return null
@@ -374,19 +350,15 @@ const actionTagType = (a: ParamAction) => {
 const fetchParams = async () => {
   loading.value = true
   try {
-    params.value = await paramApi.getList(scopeKbId.value)
+    params.value = await paramApi.getList()
+    if (!collapseInitialized && params.value.length > 0) {
+      activeCollapse.value = groupedParams.value.map((group) => group.category)
+      collapseInitialized = true
+    }
   } catch {
     params.value = []
   } finally {
     loading.value = false
-  }
-}
-
-const fetchKbOptions = async () => {
-  try {
-    kbOptions.value = await knowledgeBaseApi.getList()
-  } catch {
-    kbOptions.value = []
   }
 }
 
@@ -410,7 +382,20 @@ const handleSave = async () => {
   if (editForm.value.paramType === 'BOOLEAN') {
     value = editBooleanValue.value ? 'true' : 'false'
   } else if (editForm.value.paramType === 'INT' || editForm.value.paramType === 'DOUBLE') {
-    value = String(editNumberValue.value)
+    const num = editNumberValue.value
+    if (num == null || Number.isNaN(num)) {
+      ElMessage.warning('请输入有效的数值')
+      return
+    }
+    if (editMin.value != null && num < editMin.value) {
+      ElMessage.warning(`参数值不能小于 ${editMin.value}`)
+      return
+    }
+    if (editMax.value != null && num > editMax.value) {
+      ElMessage.warning(`参数值不能大于 ${editMax.value}`)
+      return
+    }
+    value = String(num)
   } else {
     value = editStringValue.value
   }
@@ -423,7 +408,6 @@ const handleSave = async () => {
   submitting.value = true
   try {
     await paramApi.save({
-      kbId: scopeKbId.value,
       paramKey: editForm.value.paramKey,
       paramValue: value
     })
@@ -441,7 +425,7 @@ const handleApply = async (row: ParamItemVO) => {
   if (!hasDraft(row)) return
   submitting.value = true
   try {
-    await paramApi.apply({ kbId: scopeKbId.value, paramKey: row.paramKey })
+    await paramApi.apply({ paramKey: row.paramKey })
     ElMessage.success('参数已应用并生效')
     fetchParams()
   } catch {
@@ -454,7 +438,7 @@ const handleApply = async (row: ParamItemVO) => {
 const handleRollback = async (row: ParamItemVO) => {
   try {
     await ElMessageBox.confirm(
-      `确认将「${row.paramName}」回退到默认值？本作用域的草稿与已应用配置将被删除。`,
+      `确认将「${row.paramName}」回退到默认值？全局的草稿与已应用配置将被删除。`,
       '回退确认',
       { type: 'warning', confirmButtonText: '确认回退', cancelButtonText: '取消' }
     )
@@ -463,7 +447,7 @@ const handleRollback = async (row: ParamItemVO) => {
   }
   submitting.value = true
   try {
-    await paramApi.rollback({ kbId: scopeKbId.value, paramKey: row.paramKey })
+    await paramApi.rollback({ paramKey: row.paramKey })
     ElMessage.success('已回退到默认值')
     fetchParams()
   } catch {
@@ -473,11 +457,10 @@ const handleRollback = async (row: ParamItemVO) => {
   }
 }
 
-const handleResetScope = async () => {
-  const scopeText = selectedKbId.value === GLOBAL_SCOPE_ID ? '全局作用域' : `知识库「${scopeLabel.value}」`
+const handleResetGlobal = async () => {
   try {
     await ElMessageBox.confirm(
-      `确认清空${scopeText}的全部参数配置？所有草稿与已应用配置将被删除，参数将回退到上一层（全局/默认值）。`,
+      '确认清空全局参数配置？所有草稿与已应用配置将被删除，参数将回退到元数据默认值。',
       '重置确认',
       { type: 'warning', confirmButtonText: '确认重置', cancelButtonText: '取消' }
     )
@@ -486,8 +469,8 @@ const handleResetScope = async () => {
   }
   submitting.value = true
   try {
-    await paramApi.reset({ kbId: scopeKbId.value })
-    ElMessage.success('本作用域配置已清空')
+    await paramApi.reset()
+    ElMessage.success('全局配置已清空')
     fetchParams()
   } catch {
     // 错误提示已由请求拦截器统一处理
@@ -506,7 +489,6 @@ const fetchHistory = async () => {
   historyLoading.value = true
   try {
     historyList.value = await paramApi.history({
-      kbId: scopeKbId.value,
       paramKey: historyParamKey.value || undefined
     })
   } catch {
@@ -517,7 +499,6 @@ const fetchHistory = async () => {
 }
 
 onMounted(() => {
-  fetchKbOptions()
   fetchParams()
 })
 </script>
@@ -549,10 +530,6 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.scope-select {
-  width: 240px;
 }
 
 .scope-hint {

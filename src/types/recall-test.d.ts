@@ -22,6 +22,14 @@ export type RerankStage = 'fuse_rerank' | 'rerank_fuse'
  */
 export type RecallScoreType = 'cosine' | 'bm25_normalized' | 'rrf' | 'rerank_logits'
 
+/**
+ * 查询改写路径
+ * - LLM_REWRITE：大模型改写
+ * - L1_RULE：固定规则映射（LLM 关闭或失败时降级）
+ * - NONE：未改写
+ */
+export type RewritePath = 'LLM_REWRITE' | 'L1_RULE' | 'NONE'
+
 /** 召回测试请求体 */
 export interface RecallTestRequest {
   /** 测试问题 */
@@ -54,6 +62,8 @@ export interface RecallTestRequest {
   rerankStage?: RerankStage
   /** 排除关键词（与生产链路阶段2 一致） */
   excludeKeywords?: string[]
+  /** 是否启用查询改写：不传 = 跟随参数管理 queryRewrite.enabled；true/false 仅覆盖本次测试 */
+  enableRewrite?: boolean
 }
 
 /** 单条召回结果 */
@@ -84,11 +94,25 @@ export interface RecallResultItem {
 
 /** 召回测试响应 data（apiClient 已解包 Result.data） */
 export interface RecallTestResult {
-  /** 回显测试问题 */
+  /** 回显测试问题（原始 query） */
   query: string
+  /** 实际用于检索的 query（改写生效时与 query 不同） */
+  rewrittenQuery: string
+  /** 是否执行了查询改写流程 */
+  rewriteApplied: boolean
+  /** 改写耗时（毫秒），未执行为 null */
+  rewriteMs: number | null
+  /** 改写路径：LLM_REWRITE / L1_RULE / NONE */
+  rewritePath: RewritePath
+  /** 改写保真度（0~1） */
+  rewriteConfidence: number
+  /** 改写产生的子查询（仅展示，本次未展开检索） */
+  rewriteSubQueries: string[]
+  /** 改写生效的排除关键词 */
+  rewriteExcludeKeywords: string[]
   /** 本次检索策略 */
   strategy: RetrievalStrategy
-  /** 总耗时（毫秒） */
+  /** 总耗时（毫秒，含改写耗时） */
   totalMs: number
   /** 向量检索耗时（毫秒） */
   vectorMs: number | null

@@ -23,27 +23,27 @@ export interface ParamItemVO {
   minValue: string | null
   /** 最大值（数值型） */
   maxValue: string | null
-  /** 分类：检索 / 精排 / 降权 */
+  /** 分类：检索 / 精排 / 降权 / 改写，前端按返回值动态分组 */
   category: string
   /** 参数说明 */
   description: string
   /** 展示排序 */
   sortOrder: number
-  /** 本作用域已应用值（无覆盖则为 null） */
+  /** 全局已应用值（无覆盖则为 null） */
   appliedValue: string | null
-  /** 本作用域草稿值（无草稿则为 null） */
+  /** 全局草稿值（无草稿则为 null） */
   draftValue: string | null
-  /** 生效值（KB 覆盖 > 全局已应用 > 元数据默认值） */
+  /** 生效值（全局已应用 > 元数据默认值） */
   effectiveValue: string
 }
 
-/** 操作历史记录（GET /api/params/history） */
+/** 操作历史记录（GET /api/params/history，仅全局作用域） */
 export interface ParamHistory {
   /** 历史记录 ID */
   id: number
   /** 参数键 */
   paramKey: string
-  /** 作用域类型：GLOBAL / KB */
+  /** 历史作用域类型：GLOBAL / KB（KB 为历史数据，不再参与解析） */
   scopeType: 'GLOBAL' | 'KB'
   /** 知识库 ID（GLOBAL 为 null） */
   kbId: number | null
@@ -63,8 +63,6 @@ export interface ParamHistory {
 
 /** 保存草稿请求体 */
 export interface ParamSaveRequest {
-  /** 知识库 ID；null = 全局作用域 */
-  kbId?: number | null
   /** 参数键 */
   paramKey: string
   /** 参数值（字符串，后端按类型/范围校验） */
@@ -73,14 +71,6 @@ export interface ParamSaveRequest {
 
 /** 应用 / 回退单个参数请求体 */
 export interface ParamSingleRequest {
-  /** 知识库 ID；null = 全局作用域 */
-  kbId?: number | null
   /** 参数键 */
   paramKey: string
-}
-
-/** 重置作用域请求体 */
-export interface ParamResetRequest {
-  /** 知识库 ID；null = 重置全局作用域 */
-  kbId?: number | null
 }

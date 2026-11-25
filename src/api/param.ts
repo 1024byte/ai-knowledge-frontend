@@ -3,15 +3,14 @@ import type {
   ParamItemVO,
   ParamHistory,
   ParamSaveRequest,
-  ParamSingleRequest,
-  ParamResetRequest
+  ParamSingleRequest
 } from '@/types/param'
 
 const BASE = '/params'
 
 export const paramApi = {
-  getList: (kbId?: number | null): Promise<ParamItemVO[]> => {
-    return apiClient.get(BASE, { params: { kbId: kbId ?? undefined } })
+  getList: (): Promise<ParamItemVO[]> => {
+    return apiClient.get(BASE)
   },
 
   save: (data: ParamSaveRequest): Promise<null> => {
@@ -26,11 +25,11 @@ export const paramApi = {
     return apiClient.post(`${BASE}/rollback`, data)
   },
 
-  reset: (data: ParamResetRequest): Promise<null> => {
-    return apiClient.post(`${BASE}/reset`, data)
+  reset: (): Promise<null> => {
+    return apiClient.post(`${BASE}/reset`)
   },
 
-  history: (params: { kbId?: number | null; paramKey?: string }): Promise<ParamHistory[]> => {
+  history: (params: { paramKey?: string }): Promise<ParamHistory[]> => {
     return apiClient.get(`${BASE}/history`, { params })
   }
 }

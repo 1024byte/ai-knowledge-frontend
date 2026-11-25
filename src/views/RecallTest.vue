@@ -62,6 +62,21 @@
 
         <div class="form-section">
           <div class="form-section-label">
+            <span>查询改写</span>
+            <el-tooltip content="跟随参数管理：读取 queryRewrite.enabled 的生效值；强制开启/关闭仅影响本次测试" placement="top">
+              <el-icon class="param-tip"><QuestionFilled /></el-icon>
+            </el-tooltip>
+          </div>
+          <el-radio-group v-model="rewriteMode" class="rewrite-mode-group">
+            <el-radio label="follow">跟随参数管理</el-radio>
+            <el-radio label="force-on">强制开启</el-radio>
+            <el-radio label="force-off">强制关闭</el-radio>
+          </el-radio-group>
+          <div class="rewrite-hint">召回测试为单轮查询，指代消解不生效</div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-label">
             <span>排除关键词</span>
           </div>
           <el-select
@@ -308,7 +323,7 @@
         </div>
         <div class="time-stat">
           <span class="time-value">{{ elapsed }}</span>
-          <span class="time-label">总耗时</span>
+          <span class="time-label">总耗时（含改写）</span>
           <span v-if="timingText" class="time-breakdown">{{ timingText }}</span>
         </div>
       </div>
@@ -323,7 +338,54 @@
         >
           {{ rerankApplied ? '已执行精排' : '候选为空，未执行精排' }}
         </el-tag>
+        <el-tag
+          size="small"
+          :type="rewriteActive ? 'success' : 'info'"
+          effect="plain"
+        >
+          {{ rewriteActive ? `已改写 · ${rewritePathLabel}` : '未改写' }}
+        </el-tag>
         <span class="result-count">共 {{ currentResults.length }} 条</span>
+      </div>
+
+      <div v-if="hasSearched && rewriteActive" class="rewrite-bar">
+        <div class="rewrite-line">
+          <span class="rewrite-label">原始 query</span>
+          <span class="rewrite-text">{{ originalQuery }}</span>
+        </div>
+        <div class="rewrite-line">
+          <span class="rewrite-label">实际检索 query</span>
+          <span class="rewrite-text rewrite-text-active">{{ rewrittenQuery }}</span>
+        </div>
+        <div class="rewrite-meta">
+          <span>保真度 {{ rewriteConfidenceText }}</span>
+          <span v-if="rewriteMs != null">耗时 {{ rewriteMs }}ms</span>
+          <span>{{ rewritePathLabel }}</span>
+        </div>
+        <div v-if="rewriteExcludeKeywords.length" class="rewrite-meta">
+          <span>改写排除词</span>
+          <el-tag
+            v-for="kw in rewriteExcludeKeywords"
+            :key="kw"
+            size="small"
+            type="warning"
+            effect="plain"
+          >
+            {{ kw }}
+          </el-tag>
+        </div>
+        <div v-if="rewriteSubQueries.length" class="rewrite-meta">
+          <span>子查询（仅展示，未展开检索）</span>
+          <el-tag
+            v-for="sq in rewriteSubQueries"
+            :key="sq"
+            size="small"
+            type="info"
+            effect="plain"
+          >
+            {{ sq }}
+          </el-tag>
+        </div>
       </div>
 
       <el-tabs v-model="activeTab" class="result-tabs">
@@ -413,7 +475,8 @@ import type {
   RecallScoreType,
   RecallTestRequest,
   RerankStage,
-  RetrievalStrategy
+  RetrievalStrategy,
+  RewritePath
 } from '@/types/recall-test'
 import type { KnowledgeBaseItem } from '@/types/knowledge-base'
 import type { KnowledgeDocument } from '@/types/knowledge-management'
@@ -435,6 +498,15 @@ const rerankMaxDocs = ref<number | null>(null)
 const topN = ref<number | null>(null)
 const rerankStage = ref<RerankStage>('fuse_rerank')
 const excludeKeywords = ref<string[]>([])
+const rewriteMode = ref<'follow' | 'force-on' | 'force-off'>('follow')
+const originalQuery = ref('')
+const rewrittenQuery = ref('')
+const rewriteApplied = ref(false)
+const rewriteMs = ref<number | null>(null)
+const rewritePath = ref<RewritePath>('NONE')
+const rewriteConfidence = ref(0)
+const rewriteSubQueries = ref<string[]>([])
+const rewriteExcludeKeywords = ref<string[]>([])
 const activeTab = ref('final')
 const elapsed = ref('--')
 const vectorMs = ref<number | null>(null)
@@ -541,6 +613,9 @@ const hasResult = computed(() => currentResults.value.length > 0)
 const timingText = computed(() => {
   if (elapsed.value === '--') return ''
   const parts: string[] = []
+  if (rewriteApplied.value && rewriteMs.value != null) {
+    parts.push(`改写: ${rewriteMs.value}ms`)
+  }
   if (strategy.value !== 'bm25' && vectorMs.value != null) {
     parts.push(`向量: ${vectorMs.value}ms`)
   }
@@ -552,6 +627,23 @@ const timingText = computed(() => {
   }
   return parts.join(' | ')
 })
+
+const rewritePathLabel = computed(() => {
+  const map: Record<RewritePath, string> = {
+    LLM_REWRITE: 'LLM 改写',
+    L1_RULE: 'L1 规则改写',
+    NONE: '未改写'
+  }
+  return map[rewritePath.value] || rewritePath.value
+})
+
+const rewriteConfidenceText = computed(
+  () => `${Math.round(rewriteConfidence.value * 100)}%`
+)
+
+const rewriteActive = computed(
+  () => rewriteApplied.value && rewritePath.value !== 'NONE'
+)
 
 /** 高亮停用词：问句虚词与语气词，避免整句作为关键词导致无法命中 */
 const HIGHLIGHT_STOP_WORDS = new Set([
@@ -725,6 +817,9 @@ const handleStart = async () => {
       rerankThreshold: rerankThreshold.value,
       excludeKeywords: excludeKeywords.value
     }
+    if (rewriteMode.value !== 'follow') {
+      payload.enableRewrite = rewriteMode.value === 'force-on'
+    }
     if (enableRerank.value) {
       payload.candidateMultiplier = candidateMultiplier.value
       payload.maxCandidates = maxCandidates.value
@@ -743,7 +838,15 @@ const handleStart = async () => {
     }
     scoreType.value = data.scoreType
     rerankApplied.value = data.rerankApplied
-    searchedQuery.value = data.query || query.value
+    originalQuery.value = data.query || query.value
+    rewrittenQuery.value = data.rewrittenQuery || originalQuery.value
+    rewriteApplied.value = data.rewriteApplied ?? false
+    rewriteMs.value = data.rewriteMs
+    rewritePath.value = data.rewritePath || 'NONE'
+    rewriteConfidence.value = data.rewriteConfidence ?? 0
+    rewriteSubQueries.value = data.rewriteSubQueries ?? []
+    rewriteExcludeKeywords.value = data.rewriteExcludeKeywords ?? []
+    searchedQuery.value = rewrittenQuery.value
     hasSearched.value = true
     elapsed.value = `${data.totalMs}ms`
     vectorMs.value = data.vectorMs
@@ -776,11 +879,12 @@ const resetParams = () => {
   rerankMaxDocs.value = null
   topN.value = null
   rerankStage.value = 'fuse_rerank'
+  rewriteMode.value = 'follow'
 }
 
 const loadEffectiveParams = async () => {
   try {
-    const list = await paramApi.getList(null)
+    const list = await paramApi.getList()
     const map = new Map(list.map((p) => [p.paramKey, p.effectiveValue]))
     const get = (key: string, fallback: string) => map.get(key) ?? fallback
 
@@ -1108,6 +1212,64 @@ const loadEffectiveParams = async () => {
     color: #94a3b8;
     font-variant-numeric: tabular-nums;
   }
+}
+
+.rewrite-mode-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+
+  :deep(.el-radio) {
+    margin-right: 0;
+  }
+}
+
+.rewrite-hint {
+  font-size: 12px;
+  line-height: 18px;
+  color: #94a3b8;
+}
+
+.rewrite-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.rewrite-line {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 20px;
+
+  .rewrite-label {
+    flex-shrink: 0;
+    width: 96px;
+    color: #94a3b8;
+  }
+
+  .rewrite-text {
+    color: #334155;
+    word-break: break-all;
+  }
+
+  .rewrite-text-active {
+    font-weight: 600;
+    color: #4f46e5;
+  }
+}
+
+.rewrite-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
 }
 
 .result-tabs {
