@@ -76,6 +76,22 @@ const routes: RouteRecordRaw[] = [
         }
       },
       {
+        path: 'evaluation',
+        name: 'Evaluation',
+        component: () => import('@/views/EvaluationCenter.vue'),
+        meta: {
+          title: '评测中心'
+        }
+      },
+      {
+        path: 'evaluation/runs/:id',
+        name: 'EvaluationRunDetail',
+        component: () => import('@/views/EvaluationRunDetail.vue'),
+        meta: {
+          title: '评测报告'
+        }
+      },
+      {
         path: 'param-management',
         name: 'ParamManagement',
         component: () => import('@/views/ParameterManagement.vue'),
