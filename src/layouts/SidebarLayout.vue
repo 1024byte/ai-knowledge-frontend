@@ -92,7 +92,7 @@ const userStore = useUserStore()
 
 const menuItems = [
   { path: '/home', label: '系统看板', icon: HomeFilled },
-  { path: '/ai-model', label: 'AI模型配置', icon: Setting },
+  { path: '/ai-model', label: '模型配置', icon: Setting },
   { path: '/prompt-template', label: 'Prompt模板管理', icon: Document },
   { path: '/knowledge-base', label: '知识库管理', icon: FolderOpened },
   { path: '/knowledge-management', label: '知识管理', icon: Folder },
@@ -107,7 +107,7 @@ const menuItems = [
 
 const pageTitleMap: Record<string, string> = {
   '/home': '系统看板',
-  '/ai-model': 'AI模型配置',
+  '/ai-model': '模型配置',
   '/prompt-template': 'Prompt模板管理',
   '/knowledge-management': '知识管理',
   '/knowledge-base': '知识库管理',
